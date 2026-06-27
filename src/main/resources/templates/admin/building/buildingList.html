@@ -336,33 +336,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td class="center">
-                                <label class="pos-rel">
-                                    <input type="checkbox" class="ace" value="6">
-                                    <span class="lbl"></span>
-                                </label>
-                            </td>
-                            <td class="center">Khải staff 6</td>
-                        </tr>
-                        <tr>
-                            <td class="center">
-                                <label class="pos-rel">
-                                    <input type="checkbox" class="ace" value="7">
-                                    <span class="lbl"></span>
-                                </label>
-                            </td>
-                            <td class="center">Khải staff 7</td>
-                        </tr>
-                        <tr>
-                            <td class="center">
-                                <label class="pos-rel">
-                                    <input type="checkbox" class="ace" value="8">
-                                    <span class="lbl"></span>
-                                </label>
-                            </td>
-                            <td class="center">Khải staff 8</td>
-                        </tr>
+
                         </tbody>
                     </table>
                 </div>
@@ -388,6 +362,18 @@
                 timeout: 10000,
                 dataType: 'json',
                 success: function (response) {
+                    let row = '';
+                    $.each(response.data, function (i, staff){
+                        row += '<tr>';
+                        row += '<td class="center">';
+                        row += '<label class="pos-rel"><input type="checkbox" class="ace" value="' + staff.id + '" ' + staff.checked + '><span class="lbl"></span>';
+                        row += '</label>';
+                        row += '</td>';
+                        row += '<td class="center">' + staff.userName + '</td>';
+                        row += '</tr>'
+                    });
+
+                    $('#staffList tbody').html(row);
                 },
                 error: function (response) {
                     alert(response.responseJSON.detail.join('\n'));

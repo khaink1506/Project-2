@@ -23,8 +23,7 @@ public class BuildingAPI {
 
     @GetMapping("/{id}/staff")
     public ResponseEntity<ResponseDTO> loadStaffs(@PathVariable Long id){
-
-        return null;
+        return ResponseEntity.ok(buildingService.loadStaffs(id));
     }
     @PostMapping
     public ResponseEntity<ResponseDTO> createBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {

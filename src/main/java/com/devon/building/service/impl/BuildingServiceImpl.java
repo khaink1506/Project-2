@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,17 +97,25 @@ public class BuildingServiceImpl implements BuildingService {
 
     @Override
     public ResponseDTO loadStaffs(Long buildingId) {
-        ResponseDTO responseDTO = new ResponseDTO();
-
+        BuildingEntity buildingEntity = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new RuntimeException("Building id not found"));
         List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
-        BuildingEntity building = buildingRepository.findById(buildingId).orElseThrow(() -> new RuntimeException("Building id not found"));
 
+        Set<Long> assignmentStaffs = buildingEntity.getAssignmentBuilding()
+                .stream().map(it -> it.getUser().getId()).collect(Collectors.toSet());
 
         List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
-        for(User user : staffs){
+        for(User staff : staffs){
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
+            staffResponseDTO.setUserName(staff.getUserName());
+            staffResponseDTO.setId(staff.getId());
+            staffResponseDTO.setChecked(assignmentStaffs.contains(staff.getId()) ? "checked" : " ");
+            staffResponseDTOS.add(staffResponseDTO);
         }
-        return null;
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setData(staffResponseDTOS);
+        responseDTO.setMessage("Load staff list successfully");
+        return responseDTO;
     }
 
 
