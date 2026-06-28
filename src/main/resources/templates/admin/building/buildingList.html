@@ -341,8 +341,9 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Giao tòa nhà</button>
+                    <button type="button" class="btn btn-primary" id="btnAssignBuilding">Giao tòa nhà</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <input type="hidden" id="buildingId" value="">
                 </div>
             </div>
         </div>
@@ -352,9 +353,45 @@
         function assignmentBuilding(buildingId) {
             console.log('Assignment building with id: ', buildingId);
             $('#assignmentBuildingModal').modal('show');
+            $('#buildingId').val(buildingId);
             loadStaff(buildingId);
         }
 
+        $('#btnAssignBuilding').click(function (e){
+            e.preventDefault();
+            const buildingId = $('#buildingId').val();
+
+            if(!buildingId){
+                alert("Building Id not found");
+                return;
+            }
+            const staffId = [];
+            $('#staffList tbody input[type="checkbox"]:checked').each(function () {
+                staffId.push($(this).val());
+            });
+
+            const json = {};
+            json['buildingId'] = buildingId;
+            json['staffIds'] = staffId;
+            sendRequestAssignBuilding(json);
+        });
+
+        function sendRequestAssignBuilding(json){
+            $.ajax({
+                url: '/api/buildings/assign',
+                type: 'PUT',
+                timeout: 10000,
+                data: JSON.stringify(json),
+                contentType: 'application/json',
+                dataType: 'json',
+                success: function (response) {
+                    alert(response.message);
+                },
+                error: function (response) {
+                    alert(response.responseJSON.detail.join('\n'));
+                }
+            });
+        }
         function loadStaff(buildingId){
             $.ajax({
                 url: '/api/buildings' + '/' + buildingId + '/staff',

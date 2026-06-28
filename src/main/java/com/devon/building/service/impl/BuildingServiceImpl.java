@@ -11,6 +11,7 @@ import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
+import com.devon.building.repository.AssignmentBuildingRepository;
 import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
@@ -34,6 +35,7 @@ public class BuildingServiceImpl implements BuildingService {
     private final BuildingConverter buildingConverter;
     private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
+    private final AssignmentBuildingRepository assignmentBuildingRepository;
 
     @Override
     public List<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
@@ -78,8 +80,9 @@ public class BuildingServiceImpl implements BuildingService {
     @Transactional
     public ResponseDTO deleteBuilding(List<Long> ids) {
         ResponseDTO responseDTO = new ResponseDTO();
-        rentAreaService.deleteByBuildings(ids);
-        buildingRepository.deleteByIdIn(ids);
+        assignmentBuildingRepository.deleteByBuildingIdIn(ids);
+        rentAreaService.deleteByBuildingIdIn(ids);
+        buildingRepository.deleteAllById(ids);
         responseDTO.setMessage("Delete successfully");
         return responseDTO;
     }
@@ -100,16 +103,14 @@ public class BuildingServiceImpl implements BuildingService {
         BuildingEntity buildingEntity = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new RuntimeException("Building id not found"));
         List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
-
         Set<Long> assignmentStaffs = buildingEntity.getAssignmentBuilding()
                 .stream().map(it -> it.getUser().getId()).collect(Collectors.toSet());
-
         List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
         for(User staff : staffs){
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
             staffResponseDTO.setUserName(staff.getUserName());
             staffResponseDTO.setId(staff.getId());
-            staffResponseDTO.setChecked(assignmentStaffs.contains(staff.getId()) ? "checked" : " ");
+            staffResponseDTO.setChecked(assignmentStaffs.contains(staff.getId()) ? "checked" : "");
             staffResponseDTOS.add(staffResponseDTO);
         }
         ResponseDTO responseDTO = new ResponseDTO();
@@ -117,6 +118,4 @@ public class BuildingServiceImpl implements BuildingService {
         responseDTO.setMessage("Load staff list successfully");
         return responseDTO;
     }
-
-
 }

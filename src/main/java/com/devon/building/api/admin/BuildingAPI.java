@@ -2,8 +2,10 @@ package com.devon.building.api.admin;
 
 
 import com.devon.building.exception.DataBuildingInvalidException;
+import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
+import com.devon.building.service.AssignmentBuildingService;
 import com.devon.building.service.BuildingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.Objects;
 public class BuildingAPI {
 
     private final BuildingService buildingService;
+    private final AssignmentBuildingService assignBuildingService;
 
     @GetMapping("/{id}/staff")
     public ResponseEntity<ResponseDTO> loadStaffs(@PathVariable Long id){
@@ -64,4 +67,18 @@ public class BuildingAPI {
         return ResponseEntity.ok().body(buildingService.deleteBuilding(ids));
     }
 
+    @PutMapping("/assign")
+    public ResponseEntity<ResponseDTO> assignBuilding(@RequestBody @Valid AssignBuildingDTO assignBuildingDTO, BindingResult bindingResult){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if (bindingResult.hasErrors()) {
+            responseDTO.setMessage("Not found");
+            List<String> details = bindingResult.getFieldErrors().stream()
+                    .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
+            responseDTO.setDetail(details);
+            return ResponseEntity.badRequest().body(responseDTO);
+        }
+
+        responseDTO.setMessage("Building assigned successfully");
+        return ResponseEntity.ok().body(assignBuildingService.assignmentBuilding(assignBuildingDTO));
+    }
 }
