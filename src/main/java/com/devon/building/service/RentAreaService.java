@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface RentAreaService {
 
-    public void deleteByBuildingIdIn(List<Long> id);
+    void deleteByBuildingIdIn(List<Long> id);
 
-    public void saveOrUpdateRentArea(BuildingDTO buildingDTO);
+    void saveOrUpdateRentArea(Long buildingId, String rentArea);
 }

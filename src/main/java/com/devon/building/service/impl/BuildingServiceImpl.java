@@ -6,6 +6,7 @@ import com.devon.building.converter.BuildingConverter;
 import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.RentAreaEntity;
 import com.devon.building.entity.User;
+import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
@@ -16,7 +17,6 @@ import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.RentAreaService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -54,11 +54,10 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseDTO createBuilding(BuildingDTO buildingDTO) {
         BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
-        buildingRepository.save(buildingEntity);
-        buildingDTO.setId(buildingEntity.getId());
-        rentAreaService.saveOrUpdateRentArea(buildingDTO);
+        BuildingEntity savedBuilding = buildingRepository.save(buildingEntity);
+        rentAreaService.saveOrUpdateRentArea(savedBuilding.getId(),buildingDTO.getRentArea());
         ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setMessage("create successfully");
+        responseDTO.setMessage("Tạo tòa nhà thành công");
         return responseDTO;
     }
 
@@ -66,33 +65,42 @@ public class BuildingServiceImpl implements BuildingService {
     @Transactional
     public ResponseDTO updateBuilding(BuildingDTO buildingDTO){
         buildingRepository.findById(buildingDTO.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Building with id " + buildingDTO.getId() + " not found"));
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + buildingDTO.getId()));
         BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
-        buildingRepository.save(buildingEntity);
-        rentAreaService.saveOrUpdateRentArea(buildingDTO);
+        BuildingEntity savedBuilding =  buildingRepository.save(buildingEntity);
+        rentAreaService.saveOrUpdateRentArea(savedBuilding.getId(), buildingDTO.getRentArea());
         ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setMessage("Update successfully");
+        responseDTO.setMessage("Cập nhật tòa nhà thành công");
         responseDTO.setData(buildingConverter.toBuildingDTO(buildingEntity));
         return responseDTO;
     }
     @Override
     @Transactional
     public ResponseDTO deleteBuilding(List<Long> ids) {
+        if(ids == null || ids.isEmpty()){
+            throw new InvalidRequestException("ID tòa nha không được để trống");
+        }
         ResponseDTO responseDTO = new ResponseDTO();
         assignmentBuildingRepository.deleteByBuildingIdIn(ids);
         rentAreaService.deleteByBuildingIdIn(ids);
         buildingRepository.deleteAllById(ids);
-        responseDTO.setMessage("Delete successfully");
+        responseDTO.setMessage("Xóa tòa nhà thành công");
         return responseDTO;
     }
 
     @Override
     public BuildingDTO findById(Long id) {
-        BuildingEntity buildingEntity = buildingRepository.findById(id).orElseThrow(() -> new RuntimeException("Building id not found"));
+        if(id == null){
+            throw new InvalidRequestException("ID không được để trống");
+        }
+        BuildingEntity buildingEntity = buildingRepository.findById(id)
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thấy toà nhà có ID: " + id));
         BuildingDTO buildingDTO = buildingConverter.toBuildingDTO(buildingEntity);
         List<RentAreaEntity> rentAreaEntity = buildingEntity.getRentArea();
-        String rentArea = rentAreaEntity.stream().map(area -> area.getValue().toString()).collect(Collectors.joining(", "));
+        String rentArea = rentAreaEntity.stream()
+                .map(area -> String.valueOf(area.getValue()))
+                .collect(Collectors.joining(", "));
         buildingDTO.setRentArea(rentArea);
         buildingDTO.setTypeCode( Arrays.stream(buildingEntity.getRentType().split(", ")).map(String::trim).toList());
         return buildingDTO;
@@ -101,21 +109,21 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     public ResponseDTO loadStaffs(Long buildingId) {
         BuildingEntity buildingEntity = buildingRepository.findById(buildingId)
-                .orElseThrow(() -> new RuntimeException("Building id not found"));
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thầy tòa nhà có ID: " + buildingId));
         List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
         Set<Long> assignmentStaffs = buildingEntity.getAssignmentBuilding()
                 .stream().map(it -> it.getUser().getId()).collect(Collectors.toSet());
-        List<StaffResponseDTO> staffResponseDTOS = new ArrayList<>();
+        List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
         for(User staff : staffs){
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
             staffResponseDTO.setUserName(staff.getUserName());
             staffResponseDTO.setId(staff.getId());
             staffResponseDTO.setChecked(assignmentStaffs.contains(staff.getId()) ? "checked" : "");
-            staffResponseDTOS.add(staffResponseDTO);
+            staffResponseDTOs.add(staffResponseDTO);
         }
         ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setData(staffResponseDTOS);
-        responseDTO.setMessage("Load staff list successfully");
+        responseDTO.setData(staffResponseDTOs);
+        responseDTO.setMessage("Hiển tên nhân viên thành công");
         return responseDTO;
     }
 }

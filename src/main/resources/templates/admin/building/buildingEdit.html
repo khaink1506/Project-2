@@ -225,7 +225,7 @@
                                                     <div class="col-xs-5">
                                                         <input type="text" id="managerName"
                                                                name="managerName" class="form-control" placeholder="Nhập tên quản lí..." th:value="${building.managerName}">
-                                                        <span class="error-message" id="noManagerName" style="display: none; color: red;">Vui lòng nhập tên quản lí</span>
+<!--                                                        <span class="error-message" id="noManagerName" style="display: none; color: red;">Vui lòng nhập tên quản lí</span>-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -320,16 +320,16 @@
             isValid = false;
         }
         const regexRentArea = /^\d+(, ?\d+)*$/;
-        if(data['rentArea'] && !regexRentArea.test(data['rentArea'].trim())){
+        if(!data['rentArea'] || data['rentArea'].trim() === ''){
+            document.getElementById('noRentArea').style.display = 'block';
+            isValid = false;
+        }
+        else if(!regexRentArea.test(data['rentArea'].trim())){
             document.getElementById('noRentArea').style.display = 'block';
             isValid = false;
         }
         if(!data['price'] || data['price'].trim() === ''){
             document.getElementById('noRentPrice').style.display = 'block';
-            isValid = false;
-        }
-        if(!data['managerName'] || data['managerName'].trim() === ''){
-            document.getElementById('noManagerName').style.display = 'block';
             isValid = false;
         }
         const regexPhone = /^\d{10}$/;

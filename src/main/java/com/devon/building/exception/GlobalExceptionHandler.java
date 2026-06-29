@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestControllerAdvice
-public class GlobalException {
-    @ExceptionHandler(DataBuildingInvalidException.class)
-    public ResponseEntity<Object> handleDataBuildingInvalidException(DataBuildingInvalidException e){
+public class GlobalExceptionHandler {
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<Object> handleInvalidRequestException(InvalidRequestException e){
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage(e.getMessage());
         List<String> details = new ArrayList<>();

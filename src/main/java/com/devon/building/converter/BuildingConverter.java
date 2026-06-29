@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @Component
 @RequiredArgsConstructor
@@ -49,7 +51,9 @@ public class BuildingConverter {
         Map<String, String> district = District.getDistricMap();
         String districtName = district.get(buildingEntity.getDistrict());
         if(districtName != null){
-            buildingSearchResponse.setAddress(buildingEntity.getStreet() + ", " + buildingEntity.getWard() + ", " + districtName);
+            buildingSearchResponse.setAddress(Stream.of(buildingEntity.getStreet(), buildingEntity.getWard(), districtName)
+                    .filter(it -> it != null && !it.isBlank())
+                    .collect(Collectors.joining(", ")));
         }
         buildingSearchResponse.setRentArea(buildingEntity.getRentArea().stream().map(item -> item.getValue().toString()).collect(Collectors.joining(", ")));
         return buildingSearchResponse;

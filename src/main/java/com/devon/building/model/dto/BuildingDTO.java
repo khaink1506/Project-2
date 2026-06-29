@@ -1,9 +1,6 @@
 package com.devon.building.model.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,18 +16,20 @@ import java.util.List;
 public class BuildingDTO {
 
     Long id;
-    @NotBlank(message = "name not be blank")
+    @NotBlank(message = "Tên tòa nhà không được để trống")
     String name;
     String street;
     String ward;
-    @NotBlank(message = "district not be blank")
+    @NotBlank(message = "Quận không được để trống")
     String district;
     String structure;
+    @Min(value = 0, message = "Số tầng hầm phải lớn hơn hoặc bằng 0")
     Integer numberOfBasement;
     Long floorArea;
     String direction;
     String level;
-    @Min(value = 0, message = "Rent price must be greater than or equal to 0")
+    @NotNull(message = "Gía thuê không được để trống")
+    @Min(value = 0, message = "Giá thuê phải lớn hơn hoặc bằng 0")
     Long price;
     String rentPriceDescription;
     String serviceFee;
@@ -39,9 +38,10 @@ public class BuildingDTO {
     String overTimeFee;
     Double brokerageFee;
     String managerName;
-    @Pattern(regexp = "^$|^\\d{10}$", message = "Invalid phone number format")
+    @Pattern(regexp = "^$|^\\d{10}$", message = "Số điện thoại không đúng định dạng")
     String managerPhone;
+    @NotBlank(message = "Diện tích thuê không được để trống")
     String rentArea;
-    @NotEmpty(message = "Building type is required")
+    @NotEmpty(message = "Loại tòa nhà không được để trống")
     List<String> typeCode;
 }

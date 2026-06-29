@@ -3,6 +3,7 @@ package com.devon.building.service.impl;
 import com.devon.building.entity.AssignmentBuilding;
 import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.User;
+import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.repository.AssignmentBuildingRepository;
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,19 +28,22 @@ public class AssignmentBuildingServiceImpl implements AssignmentBuildingService 
     @Transactional
     public ResponseDTO assignmentBuilding(AssignBuildingDTO assignBuildingDTO){
         BuildingEntity buildingEntity = buildingRepository.findById(assignBuildingDTO.getBuildingId())
-                .orElseThrow(() -> new RuntimeException("Building id not found"));
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + assignBuildingDTO.getBuildingId()));
         assignmentBuildingRepository.deleteByBuilding(buildingEntity);
+        List<AssignmentBuilding> assignments = new ArrayList<>();
         List<Long> staffIds = assignBuildingDTO.getStaffIds();
-        for(Long staff : staffIds){
+        for(Long staffId : staffIds){
             AssignmentBuilding assignmentBuilding = new AssignmentBuilding();
             assignmentBuilding.setBuilding(buildingEntity);
 
-            User user = userRepository.findById(staff).orElseThrow(() -> new RuntimeException("User id not found"));
+            User user = userRepository.findById(staffId)
+                    .orElseThrow(() -> new InvalidRequestException("Không tìm thấy nhân viên có ID: " + staffId));
             assignmentBuilding.setUser(user);
-            assignmentBuildingRepository.save(assignmentBuilding);
+            assignments.add(assignmentBuilding);
         }
+        assignmentBuildingRepository.saveAll(assignments);
         ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setMessage("Assign building successfully");
+        responseDTO.setMessage("Giao toà nhà thành công");
         return responseDTO;
     }
 }

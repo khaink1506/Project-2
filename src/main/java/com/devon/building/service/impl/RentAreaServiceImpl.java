@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -24,13 +25,15 @@ public class RentAreaServiceImpl implements RentAreaService {
 
     @Override
     @Transactional
-    public void saveOrUpdateRentArea(BuildingDTO buildingDTO) {
-        rentAreaRepository.deleteByBuildingId(buildingDTO.getId());
-        if (buildingDTO.getRentArea() == null || buildingDTO.getRentArea().isBlank()) return;
-        String[] rentArea = buildingDTO.getRentArea().split(",");
-        for(String value : rentArea){
-            RentAreaEntity rentAreaEntity = rentAreaConverter.toRentAreaEntity(buildingDTO.getId(), Long.valueOf(value.trim()));
-            rentAreaRepository.save(rentAreaEntity);
+    public void saveOrUpdateRentArea(Long buildingId, String rentArea) {
+        rentAreaRepository.deleteByBuildingId(buildingId);
+        if (rentArea == null || rentArea.isBlank()) return;
+        String[] areas = rentArea.split(",");
+        List<RentAreaEntity> rentAreaEntities = new ArrayList<>();
+        for(String value : areas){
+            RentAreaEntity rentAreaEntity = rentAreaConverter.toRentAreaEntity(buildingId, Long.valueOf(value.trim()));
+            rentAreaEntities.add(rentAreaEntity);
         }
+        rentAreaRepository.saveAll(rentAreaEntities);
     }
 }

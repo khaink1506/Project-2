@@ -1,7 +1,7 @@
 package com.devon.building.api.admin;
 
 
-import com.devon.building.exception.DataBuildingInvalidException;
+import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
@@ -29,10 +29,11 @@ public class BuildingAPI {
         return ResponseEntity.ok(buildingService.loadStaffs(id));
     }
     @PostMapping
-    public ResponseEntity<ResponseDTO> createBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> createBuilding(@RequestBody @Valid BuildingDTO buildingDTO,
+                                                      BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
-            responseDTO.setMessage("Validation is failed");
+            responseDTO.setMessage("Dữ liệu không hợp lệ");
             List<String> details = bindingResult.getFieldErrors().stream()
                     .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
             responseDTO.setDetail(details);
@@ -45,14 +46,14 @@ public class BuildingAPI {
     public ResponseEntity<ResponseDTO> updateBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
-            responseDTO.setMessage("Validation failed");
+            responseDTO.setMessage("Dữ liệu không hợp ");
             List<String> details = bindingResult.getFieldErrors().stream()
                     .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
             responseDTO.setDetail(details);
             return ResponseEntity.badRequest().body(responseDTO);
         }
         if(buildingDTO.getId() == null) {
-            responseDTO.setMessage("Building id is required for update");
+            responseDTO.setMessage("Phải có ID tòa nhà cần cập nhật");
             return ResponseEntity.badRequest().body(responseDTO);
         }
         return ResponseEntity.ok().body(buildingService.updateBuilding(buildingDTO));
@@ -62,7 +63,7 @@ public class BuildingAPI {
     @DeleteMapping("/{ids}")
     public ResponseEntity<ResponseDTO> deleteBuilding(@PathVariable List<Long> ids) {
         if(ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull)){
-            throw new DataBuildingInvalidException("At least one ID is required for deletion");
+            throw new InvalidRequestException("Không có ID tòa nhà được cung cấp");
         }
         return ResponseEntity.ok().body(buildingService.deleteBuilding(ids));
     }
@@ -71,14 +72,12 @@ public class BuildingAPI {
     public ResponseEntity<ResponseDTO> assignBuilding(@RequestBody @Valid AssignBuildingDTO assignBuildingDTO, BindingResult bindingResult){
         ResponseDTO responseDTO = new ResponseDTO();
         if (bindingResult.hasErrors()) {
-            responseDTO.setMessage("Not found");
+            responseDTO.setMessage("Dư liệu không hợp lệ");
             List<String> details = bindingResult.getFieldErrors().stream()
                     .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
             responseDTO.setDetail(details);
             return ResponseEntity.badRequest().body(responseDTO);
         }
-
-        responseDTO.setMessage("Building assigned successfully");
         return ResponseEntity.ok().body(assignBuildingService.assignmentBuilding(assignBuildingDTO));
     }
 }
