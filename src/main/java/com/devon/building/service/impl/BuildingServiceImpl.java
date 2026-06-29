@@ -64,6 +64,9 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     @Transactional
     public ResponseDTO updateBuilding(BuildingDTO buildingDTO){
+        if(buildingDTO.getId() == null) {
+            throw new InvalidRequestException("Phải có ID tòa nhà cần cập nhật");
+        }
         buildingRepository.findById(buildingDTO.getId())
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + buildingDTO.getId()));
         BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
@@ -78,8 +81,12 @@ public class BuildingServiceImpl implements BuildingService {
     @Override
     @Transactional
     public ResponseDTO deleteBuilding(List<Long> ids) {
-        if(ids == null || ids.isEmpty()){
-            throw new InvalidRequestException("ID tòa nha không được để trống");
+        if (ids == null || ids.isEmpty() || ids.contains(null)) {
+            throw new InvalidRequestException("Không có ID tòa nhà được cung cấp");
+        }
+        List<BuildingEntity> buildings = buildingRepository.findAllById(ids);
+        if(buildings.size() != ids.size()){
+            throw new InvalidRequestException("ID tòa nhà không tồn tại");
         }
         ResponseDTO responseDTO = new ResponseDTO();
         assignmentBuildingRepository.deleteByBuildingIdIn(ids);

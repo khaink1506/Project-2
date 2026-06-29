@@ -1,7 +1,6 @@
 package com.devon.building.api.admin;
 
 
-import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
@@ -14,7 +13,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/buildings")
@@ -52,19 +50,12 @@ public class BuildingAPI {
             responseDTO.setDetail(details);
             return ResponseEntity.badRequest().body(responseDTO);
         }
-        if(buildingDTO.getId() == null) {
-            responseDTO.setMessage("Phải có ID tòa nhà cần cập nhật");
-            return ResponseEntity.badRequest().body(responseDTO);
-        }
         return ResponseEntity.ok().body(buildingService.updateBuilding(buildingDTO));
     }
 
 
     @DeleteMapping("/{ids}")
     public ResponseEntity<ResponseDTO> deleteBuilding(@PathVariable List<Long> ids) {
-        if(ids == null || ids.isEmpty() || ids.stream().anyMatch(Objects::isNull)){
-            throw new InvalidRequestException("Không có ID tòa nhà được cung cấp");
-        }
         return ResponseEntity.ok().body(buildingService.deleteBuilding(ids));
     }
 
