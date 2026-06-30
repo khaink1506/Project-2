@@ -120,6 +120,13 @@ public class BuildingServiceImpl implements BuildingService {
         List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
         Set<Long> assignmentStaffs = buildingEntity.getAssignmentBuilding()
                 .stream().map(it -> it.getUser().getId()).collect(Collectors.toSet());
+        List<StaffResponseDTO> staffResponse = buildStaffResponses(staffs, assignmentStaffs);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setData(staffResponse);
+        responseDTO.setMessage("Hiển tên nhân viên thành công");
+        return responseDTO;
+    }
+    private List<StaffResponseDTO> buildStaffResponses(List<User> staffs, Set<Long> assignmentStaffs) {
         List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
         for(User staff : staffs){
             StaffResponseDTO staffResponseDTO = new StaffResponseDTO();
@@ -128,9 +135,6 @@ public class BuildingServiceImpl implements BuildingService {
             staffResponseDTO.setChecked(assignmentStaffs.contains(staff.getId()) ? "checked" : "");
             staffResponseDTOs.add(staffResponseDTO);
         }
-        ResponseDTO responseDTO = new ResponseDTO();
-        responseDTO.setData(staffResponseDTOs);
-        responseDTO.setMessage("Hiển tên nhân viên thành công");
-        return responseDTO;
+        return staffResponseDTOs;
     }
 }
