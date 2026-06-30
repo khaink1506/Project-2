@@ -7,8 +7,5 @@ import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     User findByUserName(String userName);
-
-    void deleteByIdIn(List<Long> ids);
-
     List<User> findAllByUserRoleAndActiveTrue(String userRole);
 }

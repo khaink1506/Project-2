@@ -1,4 +1,4 @@
-package com.devon.building.repository;
+package com.devon.building.repository.impl;
 
 import com.devon.building.entity.BuildingEntity;
 import com.devon.building.form.ProductForm;

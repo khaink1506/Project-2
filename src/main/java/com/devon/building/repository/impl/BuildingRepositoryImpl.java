@@ -49,21 +49,6 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
                                     .append("%'");
                         }
                     }
-//                    Object value = item.get(buildingSearchBuilder);
-//                    if(value != null) {
-//                        if(value.toString().matches("\\d+(\\.\\d+)?$")) {
-//                            where.append(" AND b.")
-//                                    .append(fieldName.toLowerCase())
-//                                    .append(" = ")
-//                                    .append(value.toString().toLowerCase());
-//                        }else {
-//                            where.append(" AND b.")
-//                                    .append(fieldName.toLowerCase())
-//                                    .append(" LIKE '%")
-//                                    .append(value.toString().toLowerCase())
-//                                    .append("%' ");
-//                        }
-//                    }
                 }
             }
         }catch(Exception ex) {
@@ -104,15 +89,10 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         if(buildingSearchBuilder.getTypeCode() != null && !buildingSearchBuilder.getTypeCode().isEmpty()) {
             where.append(" AND (");
 
-            where.append(
-                    buildingSearchBuilder.getTypeCode()
-                            .stream()
-                            .map(type-> "b.type LIKE '%" + type + "%'")
-                            .collect(Collectors.joining(" OR ")) + ") ");
-
-//            where.append(" AND (" + buildingSearchBuilder.getTypeCode().stream()
-//                    .map(type-> "renttype.code LIKE '%" + type + "%'")
-//                    .collect(Collectors.joining(" OR ")) + ") ");
+            where.append(buildingSearchBuilder.getTypeCode()
+                    .stream()
+                    .map(type -> "b.type LIKE '%" + type + "%'")
+                    .collect(Collectors.joining(" OR "))).append(") ");
         }
         if (buildingSearchBuilder.getDistrict() != null
                 && !buildingSearchBuilder.getDistrict().isBlank()) {

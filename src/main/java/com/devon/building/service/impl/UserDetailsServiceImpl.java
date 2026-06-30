@@ -1,7 +1,7 @@
 package com.devon.building.service.impl;
 
 import com.devon.building.entity.User;
-import com.devon.building.repository.AccountRepository;
+import com.devon.building.repository.impl.AccountRepository;
 import com.devon.building.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

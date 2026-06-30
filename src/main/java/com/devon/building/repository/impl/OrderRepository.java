@@ -1,4 +1,4 @@
-package com.devon.building.repository;
+package com.devon.building.repository.impl;
 
 import java.util.Date;
 import java.util.List;

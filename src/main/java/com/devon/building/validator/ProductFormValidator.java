@@ -7,7 +7,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import com.devon.building.repository.ProductRepository;
+import com.devon.building.repository.impl.ProductRepository;
 import com.devon.building.form.ProductForm;
 
 @Component
