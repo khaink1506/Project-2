@@ -46,6 +46,10 @@ public class BuildingConverter {
         return modelMapper.map(buildingDTO, BuildingEntity.class);
     }
 
+    public void updateBuildingEntity(BuildingDTO buildingDTO, BuildingEntity buildingEntity){
+            modelMapper.map(buildingDTO, buildingEntity);
+    }
+
     public BuildingSearchResponse toBuildingResponse(BuildingEntity buildingEntity){
         BuildingSearchResponse buildingSearchResponse = modelMapper.map(buildingEntity, BuildingSearchResponse.class);
         Map<String, String> district = District.getDistricMap();

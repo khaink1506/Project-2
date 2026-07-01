@@ -3,7 +3,6 @@ package com.devon.building.service.impl;
 import com.devon.building.converter.RentAreaConverter;
 import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.RentAreaEntity;
-import com.devon.building.repository.RentAreaRepository;
 import com.devon.building.service.RentAreaService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

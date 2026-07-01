@@ -68,7 +68,7 @@ public class BuildingServiceImpl implements BuildingService {
         }
          BuildingEntity buildingEntity = buildingRepository.findById(buildingDTO.getId())
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + buildingDTO.getId()));
-        buildingConverter.toBuildingEntity(buildingDTO);
+        buildingConverter.updateBuildingEntity(buildingDTO, buildingEntity);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
         rentAreaService.saveOrUpdateRentArea(buildingEntity, buildingDTO.getRentArea());
         buildingRepository.save(buildingEntity);
