@@ -54,8 +54,8 @@ public class User extends BaseEntity implements Serializable{
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
     private byte[] image;
 
-    @OneToMany(mappedBy = "user")
-    List<AssignmentBuilding> assignmentBuilding = new ArrayList<>();
+    @ManyToMany(mappedBy = "user")
+     private List<BuildingEntity> building = new ArrayList<>();
 
     public User(Long id, String userName, Boolean active, String userRole, String fullName, String phone) {
         this.id = id;

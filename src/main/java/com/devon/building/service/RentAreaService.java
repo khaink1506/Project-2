@@ -1,9 +1,9 @@
 package com.devon.building.service;
 
-import java.util.List;
+import com.devon.building.entity.BuildingEntity;
+
+
 public interface RentAreaService {
 
-    void deleteByBuildingIdIn(List<Long> id);
-
-    void saveOrUpdateRentArea(Long buildingId, String rentArea);
+    void saveOrUpdateRentArea(BuildingEntity buildingEntity, String rentArea);
 }

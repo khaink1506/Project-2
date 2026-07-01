@@ -7,12 +7,12 @@ import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.RentAreaEntity;
 import com.devon.building.entity.User;
 import com.devon.building.exception.InvalidRequestException;
+import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
-import com.devon.building.repository.AssignmentBuildingRepository;
 import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
@@ -35,7 +35,6 @@ public class BuildingServiceImpl implements BuildingService {
     private final BuildingConverter buildingConverter;
     private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
-    private final AssignmentBuildingRepository assignmentBuildingRepository;
 
     @Override
     public List<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
@@ -54,8 +53,8 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseDTO createBuilding(BuildingDTO buildingDTO) {
         BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
-        BuildingEntity savedBuilding = buildingRepository.save(buildingEntity);
-        rentAreaService.saveOrUpdateRentArea(savedBuilding.getId(),buildingDTO.getRentArea());
+        rentAreaService.saveOrUpdateRentArea(buildingEntity,buildingDTO.getRentArea());
+        buildingRepository.save(buildingEntity);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("Tạo tòa nhà thành công");
         return responseDTO;
@@ -67,12 +66,12 @@ public class BuildingServiceImpl implements BuildingService {
         if(buildingDTO.getId() == null) {
             throw new InvalidRequestException("Phải có ID tòa nhà cần cập nhật");
         }
-        buildingRepository.findById(buildingDTO.getId())
+         BuildingEntity buildingEntity = buildingRepository.findById(buildingDTO.getId())
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + buildingDTO.getId()));
-        BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
+        buildingConverter.toBuildingEntity(buildingDTO);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
-        BuildingEntity savedBuilding =  buildingRepository.save(buildingEntity);
-        rentAreaService.saveOrUpdateRentArea(savedBuilding.getId(), buildingDTO.getRentArea());
+        rentAreaService.saveOrUpdateRentArea(buildingEntity, buildingDTO.getRentArea());
+        buildingRepository.save(buildingEntity);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("Cập nhật tòa nhà thành công");
         responseDTO.setData(buildingConverter.toBuildingDTO(buildingEntity));
@@ -88,10 +87,9 @@ public class BuildingServiceImpl implements BuildingService {
         if(buildings.size() != ids.size()){
             throw new InvalidRequestException("ID tòa nhà không tồn tại");
         }
+        buildings.forEach(building -> building.getUser().clear());
+        buildingRepository.deleteAll(buildings);
         ResponseDTO responseDTO = new ResponseDTO();
-        assignmentBuildingRepository.deleteByBuildingIdIn(ids);
-        rentAreaService.deleteByBuildingIdIn(ids);
-        buildingRepository.deleteAllById(ids);
         responseDTO.setMessage("Xóa tòa nhà thành công");
         return responseDTO;
     }
@@ -118,14 +116,31 @@ public class BuildingServiceImpl implements BuildingService {
         BuildingEntity buildingEntity = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thầy tòa nhà có ID: " + buildingId));
         List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
-        Set<Long> assignmentStaffs = buildingEntity.getAssignmentBuilding()
-                .stream().map(it -> it.getUser().getId()).collect(Collectors.toSet());
+        Set<Long> assignmentStaffs = buildingEntity.getUser()
+                .stream().map(User::getId).collect(Collectors.toSet());
         List<StaffResponseDTO> staffResponse = buildStaffResponses(staffs, assignmentStaffs);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setData(staffResponse);
-        responseDTO.setMessage("Hiển tên nhân viên thành công");
         return responseDTO;
     }
+
+    @Override
+    @Transactional
+    public ResponseDTO assignmentBuilding(AssignBuildingDTO assignBuildingDTO) {
+        BuildingEntity buildingEntity = buildingRepository.findById(assignBuildingDTO.getBuildingId())
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà"));
+        List<User> staffs = userRepository.findAllById(assignBuildingDTO.getStaffIds());
+        if(staffs.size() != assignBuildingDTO.getStaffIds().size()){
+            throw new InvalidRequestException("Nhân viên không tồn tại");
+        }
+        buildingEntity.getUser().clear();
+        buildingEntity.getUser().addAll(staffs);
+        buildingRepository.save(buildingEntity);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Giao toà nhà thành công");
+        return responseDTO;
+    }
+
     private List<StaffResponseDTO> buildStaffResponses(List<User> staffs, Set<Long> assignmentStaffs) {
         List<StaffResponseDTO> staffResponseDTOs = new ArrayList<>();
         for(User staff : staffs){

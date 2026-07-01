@@ -129,10 +129,19 @@ public class BuildingEntity implements Serializable {
     @Column(name = "managerphone")
     String managerPhone;
 
-    @OneToMany(mappedBy = "building")
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RentAreaEntity> rentArea = new ArrayList<>();
 
-    @OneToMany(mappedBy = "building")
-    private List<AssignmentBuilding> assignmentBuilding = new ArrayList<>();
+
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(
+            name = "assignmentbuilding",
+            joinColumns = @JoinColumn(name = "buildingid"),
+            inverseJoinColumns = @JoinColumn(name = "staffid")
+    )
+    private List<User> user = new ArrayList<>();
 
 }
