@@ -133,10 +133,7 @@ public class BuildingEntity implements Serializable {
     private List<RentAreaEntity> rentArea = new ArrayList<>();
 
 
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany
     @JoinTable(
             name = "assignmentbuilding",
             joinColumns = @JoinColumn(name = "buildingid"),

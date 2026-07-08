@@ -41,6 +41,10 @@ public class BuildingDTO {
     @Pattern(regexp = "^$|^\\d{10}$", message = "Số điện thoại không đúng định dạng")
     String managerPhone;
     @NotBlank(message = "Diện tích thuê không được để trống")
+    @Pattern(
+            regexp = "^\\d++(?:, ?\\d++)*+$",
+            message = "Nhập lại có dạng: 100, 200, 300 hoặc 100,200,300"
+    )
     String rentArea;
     @NotEmpty(message = "Loại tòa nhà không được để trống")
     List<String> typeCode;

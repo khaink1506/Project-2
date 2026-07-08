@@ -308,7 +308,7 @@
             message.style.display = 'none';
         });
     }
-    function validateData(data){
+        function validateData(data){
         hideErrorMessages();
         let isValid = true;
         if(!data['name'] || data['name'].trim() === ''){
@@ -325,10 +325,12 @@
             isValid = false;
         }
         else if(!regexRentArea.test(data['rentArea'].trim())){
-            document.getElementById('noRentArea').style.display = 'block';
-            isValid = false;
+                document.getElementById('noRentArea').style.display = 'block'
+                document.getElementById('noRentArea').innerText = "Mời nhập lại đúng định dạng: 100, 200, 300 hoặc 100,200,300";
+                isValid = false;
         }
-        if(!data['price'] || data['price'].trim() === ''){
+
+        if (!data['price'] || data['price'].trim() === '') {
             document.getElementById('noRentPrice').style.display = 'block';
             isValid = false;
         }
