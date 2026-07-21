@@ -29,7 +29,7 @@ public class BuildingDTO {
     String direction;
     String level;
     @NotNull(message = "Gía thuê không được để trống")
-    @Min(value = 0, message = "Giá thuê phải lớn hơn hoặc bằng 0")
+    @Min(value = 1, message = "Giá thuê phải lớn hơn hoặc bằng 0")
     Long price;
     String rentPriceDescription;
     String serviceFee;
