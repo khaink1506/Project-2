@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
         user.setUserName(userName);
         user.setActive(true);
         user.setFullName(userDTO.getFullName());
-        user.setEncrytedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
+        user.setEncryptedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
         user.setUserRole(User.ROLE_MANAGER);
         if (userDTO.getFileData() != null) {
             byte[] image = null;

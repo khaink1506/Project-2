@@ -249,7 +249,7 @@
                                                             <input type="checkbox" name="typeCode"
                                                                    th:value="${type.key}"
                                                                    th:text="${type.value}"
-                                                                   th:checked="${building.typeCode != null and building.typeCode.contains(type.key)}">
+                                                                   th:checked="${(building.typeCode != null) and building.typeCode.contains(type.key)}">
                                                         </label>
                                                         <span class="error-message" id="typeCode" style="display: none; color: red;">Vui lòng chọn ít nhất một loại tòa nhà</span>
                                                     </div>
