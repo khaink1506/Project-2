@@ -107,7 +107,7 @@ public class BuildingServiceImpl implements BuildingService {
                 .map(area -> String.valueOf(area.getValue()))
                 .collect(Collectors.joining(", "));
         buildingDTO.setRentArea(rentArea);
-        buildingDTO.setTypeCode( Arrays.stream(buildingEntity.getRentType().split(", ")).map(String::trim).toList());
+        buildingDTO.setTypeCode( Arrays.stream(buildingEntity.getRentType().split(",")).map(String::trim).toList());
         return buildingDTO;
     }
 
