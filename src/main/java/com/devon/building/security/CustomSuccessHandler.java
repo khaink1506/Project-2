@@ -27,14 +27,11 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         String targetUrl = determineTargetUrl(authentication);
-
         if (response.isCommitted()) {
             return;
         }
-
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
-
     private String determineTargetUrl(Authentication authentication) {
         List<String> roles = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 

@@ -34,7 +34,7 @@ public class User extends BaseEntity implements Serializable{
     private String encrytedPassword;
 
     @Column(name = "Active", length = 1, nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @Column(name = "userrole", length = 20, nullable = false)
     private String userRole;
