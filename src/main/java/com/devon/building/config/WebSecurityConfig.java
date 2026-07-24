@@ -1,11 +1,13 @@
 package com.devon.building.config;
 
 
+import com.devon.building.constant.SystemConstant;
 import com.devon.building.security.CustomSuccessHandler;
 import com.devon.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -40,13 +42,16 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
+                        .requestMatchers("/admin/users/list").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.PUT, "/api/buildings/assign").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.DELETE, "/users").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers("/admin/**").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/j_spring_security_check")
+                        .loginProcessingUrl("/j_spring_security_check") // /j_spring_security_check // Nếu không có loginProcessingUrl thì Spring dẽ dùng mặc định là POST /login
                         .successHandler(myAuthenticationSuccessHandler())
                         .failureUrl("/admin/login?incorrectAccount")
                         .usernameParameter("userName")

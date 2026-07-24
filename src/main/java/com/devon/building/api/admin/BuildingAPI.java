@@ -25,29 +25,12 @@ public class BuildingAPI {
         return ResponseEntity.ok(buildingService.loadStaffs(id));
     }
     @PostMapping
-    public ResponseEntity<ResponseDTO> createBuilding(@RequestBody @Valid BuildingDTO buildingDTO,
-                                                      BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            ResponseDTO responseDTO = new ResponseDTO();
-            responseDTO.setMessage("Dữ liệu không hợp lệ");
-            List<String> details = bindingResult.getFieldErrors().stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
-            responseDTO.setDetail(details);
-            return ResponseEntity.badRequest().body(responseDTO);
-        }
+    public ResponseEntity<ResponseDTO> createBuilding(@RequestBody @Valid BuildingDTO buildingDTO) {
         return ResponseEntity.ok().body(buildingService.createBuilding(buildingDTO));
     }
 
     @PutMapping
-    public ResponseEntity<ResponseDTO> updateBuilding(@RequestBody @Valid BuildingDTO buildingDTO, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            ResponseDTO responseDTO = new ResponseDTO();
-            responseDTO.setMessage("Dữ liệu không hợp ");
-            List<String> details = bindingResult.getFieldErrors().stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
-            responseDTO.setDetail(details);
-            return ResponseEntity.badRequest().body(responseDTO);
-        }
+    public ResponseEntity<ResponseDTO> updateBuilding(@RequestBody @Valid BuildingDTO buildingDTO) {
         return ResponseEntity.ok().body(buildingService.updateBuilding(buildingDTO));
     }
 
@@ -58,15 +41,7 @@ public class BuildingAPI {
     }
 
     @PutMapping("/assign")
-    public ResponseEntity<ResponseDTO> assignBuilding(@RequestBody @Valid AssignBuildingDTO assignBuildingDTO, BindingResult bindingResult){
-        if (bindingResult.hasErrors()) {
-            ResponseDTO responseDTO = new ResponseDTO();
-            responseDTO.setMessage("Dư liệu không hợp lệ");
-            List<String> details = bindingResult.getFieldErrors().stream()
-                    .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
-            responseDTO.setDetail(details);
-            return ResponseEntity.badRequest().body(responseDTO);
-        }
+    public ResponseEntity<ResponseDTO> assignBuilding(@RequestBody @Valid AssignBuildingDTO assignBuildingDTO){
         return ResponseEntity.ok().body(buildingService.assignmentBuilding(assignBuildingDTO));
     }
 }

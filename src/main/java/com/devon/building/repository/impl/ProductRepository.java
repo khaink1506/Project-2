@@ -52,7 +52,7 @@ public class ProductRepository {
         if (building == null) {
             isNew = true;
             building = new BuildingEntity();
-            building.setCreateDate(new Date());
+            building.setCreatedDate(new Date());
         }
         building.setId(id);
         building.setName(productForm.getName());

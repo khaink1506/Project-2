@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title>Building List</title>
@@ -174,13 +175,19 @@
                                                                    name="managerPhone" class="form-control"
                                                                    th:value="${buildingSearchRequest.managerPhone}"/>
                                                         </div>
-                                                        <div class="col-xs-2">
-                                                            <label for="staffId">Chọn nhân viên</label>
-                                                            <select name="staffId" id="staffId" class="form-control">
-                                                                <option value="">-- Chọn nhân viên --</option>
-                                                                <option th:each="staff : ${staffs}" th:value="${staff.key}" th:text="${staff.value}" th:selected="${staff.key == buildingSearchRequest.staffId}"></option>
-                                                            </select>
-                                                        </div>
+                                                        <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                                            <div class="col-xs-2">
+                                                                <label for="staffId">Chọn nhân viên</label>
+                                                                <select name="staffId" id="staffId" class="form-control">
+                                                                    <option value="">-- Chọn nhân viên --</option>
+                                                                    <option th:each="staff : ${staffs}"
+                                                                            th:value="${staff.key}"
+                                                                            th:text="${staff.value}"
+                                                                            th:selected="${staff.key == buildingSearchRequest.staffId}">
+                                                                    </option>
+                                                                </select>
+                                                            </div>
+                                                        </th:block>
                                                     </div>
                                                 </div>
                                                 <div class="form-group">
@@ -288,10 +295,12 @@
                                     <td th:text="${building.brokerageFee}"></td>
                                     <td>
                                         <div class="hidden-sm hidden-xs btn-group">
-                                            <button class="btn btn-xs btn-success" title="Giao tào nhà"
-                                                    th:onclick="|assignmentBuilding(${building.id})|">
-                                                <i class="ace-icon fa fa-users"></i>
-                                            </button>
+                                            <th:block sec:authorize="hasRole('ROLE_MANAGER')">
+                                                <button class="btn btn-xs btn-success" title="Giao tào nhà"
+                                                        th:onclick="|assignmentBuilding(${building.id})|">
+                                                    <i class="ace-icon fa fa-users"></i>
+                                                </button>
+                                            </th:block>
 
                                             <a th:href="@{/admin/buildings/{id}/update(id=${building.id})}" class="btn btn-xs btn-info" title="Sửa thông tin tòa nhà">
                                                 <i class="ace-icon fas fa-pencil-alt bigger-120"></i>

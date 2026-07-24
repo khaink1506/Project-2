@@ -17,13 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "building")
-public class BuildingEntity implements Serializable {
+public class BuildingEntity extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = -1000119078147252957L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
 
     @Column(name = "name", length = 255, nullable = false)
     String name;
@@ -37,11 +34,6 @@ public class BuildingEntity implements Serializable {
     @Lob
     @Column(name = "image", length = Integer.MAX_VALUE, nullable = true)
     byte[] image;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createddate", nullable = false)
-    Date createDate;
-
 
 
     @Column(name = "district", length = 255, nullable = false)
@@ -113,15 +105,6 @@ public class BuildingEntity implements Serializable {
 
     @Column(name = "map")
     String map;
-
-    @Column(name = "modifieddate")
-    Date modifiedDate;
-
-    @Column(name = "createdby")
-    String createdBy;
-
-    @Column(name = "modifiedby")
-    String modifiedBy;
 
     @Column(name = "managername")
     String managerName;

@@ -16,14 +16,10 @@ import java.util.Date;
 
 @Entity
 @Table(name="rentarea")
-public class RentAreaEntity implements Serializable {
+public class RentAreaEntity extends BaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
 
     @Column(name = "value")
     Long value;
@@ -32,16 +28,5 @@ public class RentAreaEntity implements Serializable {
     @JoinColumn(name = "buildingid", nullable = false)
     private BuildingEntity building;
 
-    @Column(name = "createddate")
-    Date createdDate;
-
-    @Column(name = "modifieddate")
-    Date modifiedDate;
-
-    @Column(name = "createdby")
-    String createdBy;
-
-    @Column(name = "modifiedby")
-    String modifiedBy;
 }
 
