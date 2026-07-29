@@ -27,4 +27,5 @@ public class BuildingSearchRequest {
     String managerPhone;
     Long staffId;
     List<String> typeCode;
+    Integer page = 1;
 }

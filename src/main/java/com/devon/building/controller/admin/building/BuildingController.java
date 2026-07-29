@@ -7,15 +7,13 @@ import com.devon.building.enums.RentType;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
+import com.devon.building.pagination.PaginationResult;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.UserService;
 import com.devon.building.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
@@ -31,19 +29,26 @@ public class BuildingController {
     private static final String RENT_TYPE = "rentTypes";
 
     @GetMapping("/list")
-    public ModelAndView getAllBuildings(@ModelAttribute BuildingSearchRequest buildingSearchRequest){
+    public ModelAndView getAllBuildings(@RequestParam(value = "page", defaultValue = "1") String pageStr, @ModelAttribute BuildingSearchRequest buildingSearchRequest){
         ModelAndView modelAndView = new ModelAndView("admin/building/buildingList");
 
         if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
             User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
             buildingSearchRequest.setStaffId(user.getId());
         }
+        int page = 1;
+        try{
+            page = Integer.parseInt(pageStr);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        buildingSearchRequest.setPage(page);
         modelAndView.addObject("staffs", userService.loadStaff());
         modelAndView.addObject(DISTRICT, District.getDistricMap());
         modelAndView.addObject(RENT_TYPE, RentType.getRentTypeMap());
         modelAndView.addObject("buildingSearchRequest", buildingSearchRequest);
-        List<BuildingSearchResponse> responses = buildingService.findBuilding(buildingSearchRequest);
-        modelAndView.addObject("buildingList", responses);
+        PaginationResult<BuildingSearchResponse> result = buildingService.findBuilding(buildingSearchRequest, buildingSearchRequest.getPage(), SystemConstant.MAX_PAGE_ITEM, SystemConstant.MAX_NAVIGATION_PAGE);
+        modelAndView.addObject("result", result);
 
         return modelAndView;
     }

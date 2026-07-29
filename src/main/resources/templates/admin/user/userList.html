@@ -61,23 +61,22 @@
                                     </a>
                                 </div>
                             </div>
-                            <form th:action="@{/admin/users/list}" th:object="${model}" id="listForm" method="get">
+                            <form th:action="@{/admin/users/list}" th:object="${searchKey}" id="listForm" method="get">
                                 <div class="widget-body">
                                     <div class="widget-main">
                                         <div class="form-horizontal">
-
+                                            <input type="hidden" name="page" id="page" th:value="${searchKey.page}">
                                             <div class="form-group">
                                                 <label class="col-sm-2 control-label">Giá trị cần tìm</label>
                                                 <div class="col-sm-8">
-                                                    <input type="text" class="form-control input-sm" name="key"/>
+                                                    <input type="text" class="form-control input-sm" name="key", th:value="${searchKey.key}"/>
                                                 </div>
                                             </div>
 
                                             <div class="form-group">
                                                 <label class="col-sm-2 control-label"></label>
                                                 <div class="col-sm-8">
-                                                    <button id="btnSearch" type="submit"
-                                                            class="btn btn-sm btn-success">
+                                                    <button id="btnSearch" class="btn btn-sm btn-success">
                                                         Tìm kiếm
                                                         <i class="ace-icon fa fa-arrow-right icon-on-right bigger-110"></i>
                                                     </button>
@@ -149,9 +148,14 @@
                             </table>
                             <div class="page-navigator" th:if="${model.totalPages > 1}">
                                 <th:block th:each="page: ${model.navigationPages}">
-                                    <a th:if="${page != -1}" class="nav-item"
-                                       th:href="@{|/admin/users/list?page=${page}|}" th:utext="${page}"></a>
-
+                                    <a th:if="${page != -1}"
+                                       class="nav-item"
+                                       th:classappend="${page == model.currentPage} ? 'active-page' : ''"
+                                       href="javascript:void(0)"
+                                       th:data-page="${page}"
+                                       th:text="${page}"
+                                       onclick="gotoPage(this)">
+                                    </a>
                                     <span th:if="${page == -1}" class="nav-item"> ... </span>
                                 </th:block>
                             </div>
@@ -166,6 +170,14 @@
 <th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
 
 <script type="text/javascript">
+
+    function gotoPage(element){
+        $(".page-navigator .nav-item").removeClass("active-page");
+        $(element).addClass("active-page");
+        const page = $(element).data("page");
+        $('#page').val(page);
+        $('#listForm').submit();
+    }
     $('#checkAll').on('change', function () {
         const isChecked = $(this).prop('checked');
         $('.check-box-element').prop('checked', isChecked);

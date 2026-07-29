@@ -18,4 +18,9 @@ public class SystemConstant {
     public static final String STAFF = "STAFF";
     public static final String USER = "USER";
 
+    // Dùng cho phân trang
+    public static final Integer MAX_PAGE_ITEM = 5;
+    public static final Integer MAX_NAVIGATION_PAGE = 10;
+
+
 }

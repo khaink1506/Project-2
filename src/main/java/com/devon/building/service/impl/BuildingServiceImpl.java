@@ -13,6 +13,7 @@ import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
+import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
@@ -37,15 +38,23 @@ public class BuildingServiceImpl implements BuildingService {
     private final UserRepository userRepository;
 
     @Override
-    public List<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
+    public PaginationResult<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest, int page, int maxPageItem, int maxNavigationPage) {
         BuildingSearchBuilder buildingSearchBuilder = buildingConverter.toBuildingSearchBuilder(buildingSearchRequest);
-        List<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder);
+        PaginationResult<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder, page, maxPageItem, maxNavigationPage);
         List<BuildingSearchResponse> responses = new ArrayList<>();
-        for(BuildingEntity building : buildingEntity){
+        for(BuildingEntity building : buildingEntity.getList()){
             BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingResponse(building);
             responses.add(buildingSearchResponse);
         }
-        return responses;
+
+        PaginationResult<BuildingSearchResponse> result = new PaginationResult<>();
+        result.setMaxResult(maxPageItem);
+        result.setList(responses);
+        result.setNavigationPages(buildingEntity.getNavigationPages());
+        result.setTotalPages(buildingEntity.getTotalPages());
+        result.setTotalRecords(buildingEntity.getTotalRecords());
+        result.setCurrentPage(buildingEntity.getCurrentPage());
+        return result;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.devon.building.controller.admin.user;
 import com.devon.building.constant.SystemConstant;
 import com.devon.building.entity.User;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.request.UserSearchRequest;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.UserService;
@@ -42,9 +43,11 @@ public class UserController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        final int MAX_RESULT = 5;
-        final int MAX_NAVIGATION_PAGE = 10;
-        PaginationResult<User> paginationResult = userService.listUserInfo(key, page, MAX_RESULT, MAX_NAVIGATION_PAGE);
+        PaginationResult<User> paginationResult = userService.listUserInfo(key, page, SystemConstant.MAX_PAGE_ITEM, SystemConstant.MAX_NAVIGATION_PAGE);
+        UserSearchRequest userSearchRequest = new UserSearchRequest();
+        userSearchRequest.setKey(key);
+        userSearchRequest.setPage(page);
+        modelAndView.addObject("searchKey", userSearchRequest);
         modelAndView.addObject("model", paginationResult);
         initMessageResponse(modelAndView, request);
         return modelAndView;

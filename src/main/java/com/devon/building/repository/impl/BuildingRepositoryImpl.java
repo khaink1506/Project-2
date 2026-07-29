@@ -2,6 +2,7 @@ package com.devon.building.repository.impl;
 
 import com.devon.building.builder.BuildingSearchBuilder;
 import com.devon.building.entity.BuildingEntity;
+import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.custom.BuildingRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -103,7 +104,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 
     }
     @Override
-    public List<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder) {
+    public PaginationResult<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder, int page, int maxPageItem, int maxNavigationPage) {
         StringBuilder sql = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
         joinTable(buildingSearchBuilder, sql);
         StringBuilder where = new StringBuilder(" Where 1 = 1 ");
@@ -111,6 +112,6 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         querySpecial(buildingSearchBuilder, where);
         sql.append(where);
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
-        return query.getResultList();
+        return new PaginationResult<>(query, query.getResultList().size(), page, maxPageItem, maxNavigationPage);
     }
 }
