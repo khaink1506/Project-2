@@ -276,7 +276,7 @@
                                 </thead>
 
                                 <tbody>
-                                <tr th:each="building : ${result.getList()}">
+                                <tr th:each="building : ${result.content}">
                                     <td class="center">
                                         <label class="pos-rel">
                                             <input type="checkbox" class="ace" th:value="${building.id}">
@@ -317,10 +317,10 @@
                                 </tbody>
                             </table>
                             <div class="page-navigator" th:if="${result.totalPages > 1}">
-                                <th:block th:each="page: ${result.navigationPages}">
+                                <th:block th:each="page: ${#numbers.sequence(1, result.totalPages)}">
                                     <a th:if="${page != -1}"
                                        class="nav-item"
-                                       th:classappend="${page == result.currentPage} ? 'active-page' : ''"
+                                       th:classappend="${page == result.number + 1} ? 'active-page' : ''"
                                        href="javascript:void(0)"
                                        th:data-page="${page}"
                                        th:text="${page}"

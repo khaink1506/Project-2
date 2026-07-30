@@ -1,5 +1,7 @@
 package com.devon.building.model.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,5 +29,12 @@ public class BuildingSearchRequest {
     String managerPhone;
     Long staffId;
     List<String> typeCode;
+
+    @Min(1)
     Integer page = 1;
+
+//    @Min(1)
+//    @Max(100)
+//    Integer size = 10;
+
 }

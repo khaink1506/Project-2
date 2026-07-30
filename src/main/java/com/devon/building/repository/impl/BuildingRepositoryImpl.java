@@ -2,17 +2,18 @@ package com.devon.building.repository.impl;
 
 import com.devon.building.builder.BuildingSearchBuilder;
 import com.devon.building.entity.BuildingEntity;
-import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.custom.BuildingRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.Query;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
@@ -104,7 +105,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 
     }
     @Override
-    public PaginationResult<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder, int page, int maxPageItem, int maxNavigationPage) {
+    public Page<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder, Pageable pageable) {
         StringBuilder sql = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
         joinTable(buildingSearchBuilder, sql);
         StringBuilder where = new StringBuilder(" Where 1 = 1 ");
@@ -112,6 +113,18 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         querySpecial(buildingSearchBuilder, where);
         sql.append(where);
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
-        return new PaginationResult<>(query, query.getResultList().size(), page, maxPageItem, maxNavigationPage);
+        /*
+            Bắt đầu lấy từ bản ghi thứ.
+            Cú pháp : query.setFirstResult(vi_tri_bat-dau)
+            getOffset() là được tính từ pageReuqest.of(pageNumber,maxPageItem)
+        */
+        query.setFirstResult((int) pageable.getOffset());
+        query.setMaxResults(pageable.getPageSize());
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(DISTINCT b.id) FROM building b ");
+        joinTable(buildingSearchBuilder, countSql);
+        countSql.append(where);
+        Query countQuery = entityManager.createNativeQuery(countSql.toString());
+        long total = ((Number) countQuery.getSingleResult()).longValue();
+        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 }

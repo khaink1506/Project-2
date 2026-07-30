@@ -2,10 +2,9 @@ package com.devon.building.repository.custom;
 
 import com.devon.building.builder.BuildingSearchBuilder;
 import com.devon.building.entity.BuildingEntity;
-import com.devon.building.pagination.PaginationResult;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BuildingRepositoryCustom {
-    PaginationResult<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder , int page, int maxPageItem, int maxNavigationPage);
+    Page<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder, Pageable pageable);
 }

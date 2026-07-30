@@ -13,13 +13,16 @@ import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.model.response.StaffResponseDTO;
-import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.BuildingRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.RentAreaService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,23 +41,16 @@ public class BuildingServiceImpl implements BuildingService {
     private final UserRepository userRepository;
 
     @Override
-    public PaginationResult<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest, int page, int maxPageItem, int maxNavigationPage) {
+    public Page<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
         BuildingSearchBuilder buildingSearchBuilder = buildingConverter.toBuildingSearchBuilder(buildingSearchRequest);
-        PaginationResult<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder, page, maxPageItem, maxNavigationPage);
+        Pageable pageable = PageRequest.of(buildingSearchRequest.getPage() - 1, SystemConstant.MAX_PAGE_ITEM);
+        Page<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder, pageable);
         List<BuildingSearchResponse> responses = new ArrayList<>();
-        for(BuildingEntity building : buildingEntity.getList()){
+        for(BuildingEntity building : buildingEntity.getContent()){
             BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingResponse(building);
             responses.add(buildingSearchResponse);
         }
-
-        PaginationResult<BuildingSearchResponse> result = new PaginationResult<>();
-        result.setMaxResult(maxPageItem);
-        result.setList(responses);
-        result.setNavigationPages(buildingEntity.getNavigationPages());
-        result.setTotalPages(buildingEntity.getTotalPages());
-        result.setTotalRecords(buildingEntity.getTotalRecords());
-        result.setCurrentPage(buildingEntity.getCurrentPage());
-        return result;
+        return new PageImpl<>(responses, pageable, buildingEntity.getTotalElements());
     }
 
     @Override

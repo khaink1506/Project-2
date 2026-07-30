@@ -5,12 +5,12 @@ import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
-import com.devon.building.pagination.PaginationResult;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface BuildingService {
-    PaginationResult<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest, int page, int maxPageItem, int maxNavigationPage);
+    Page<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest);
 
     ResponseDTO createBuilding(BuildingDTO buildingDTO);
 
