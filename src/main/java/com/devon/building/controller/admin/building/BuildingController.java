@@ -1,5 +1,7 @@
 package com.devon.building.controller.admin.building;
 
+import com.devon.building.constant.SystemConstant;
+import com.devon.building.entity.User;
 import com.devon.building.enums.District;
 import com.devon.building.enums.RentType;
 import com.devon.building.model.dto.BuildingDTO;
@@ -7,7 +9,9 @@ import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.UserService;
+import com.devon.building.utils.SecurityUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,14 +33,17 @@ public class BuildingController {
 
     @GetMapping("/list")
     public ModelAndView getAllBuildings(@ModelAttribute BuildingSearchRequest buildingSearchRequest){
+//        if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
+//            User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
+//            buildingSearchRequest.setStaffId(user.getId());
+//        }
         ModelAndView modelAndView = new ModelAndView("admin/building/buildingList");
-
         modelAndView.addObject("staffs", userService.loadStaff());
         modelAndView.addObject(DISTRICT, District.getDistricMap());
         modelAndView.addObject(RENT_TYPE, RentType.getRentTypeMap());
         modelAndView.addObject("buildingSearchRequest", buildingSearchRequest);
-        List<BuildingSearchResponse> responses = buildingService.findBuilding(buildingSearchRequest);
-        modelAndView.addObject("buildingList", responses);
+        Page<BuildingSearchResponse> result = buildingService.findBuilding(buildingSearchRequest);
+        modelAndView.addObject("result", result);
 
         return modelAndView;
     }

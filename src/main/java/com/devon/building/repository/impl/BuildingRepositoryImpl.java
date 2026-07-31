@@ -8,6 +8,9 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.PersistenceContextType;
 import jakarta.persistence.Query;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.lang.reflect.Field;
@@ -103,7 +106,7 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
 
     }
     @Override
-    public List<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder) {
+    public Page<BuildingEntity> findALlBuilding(BuildingSearchBuilder buildingSearchBuilder, Pageable pageable) {
         StringBuilder sql = new StringBuilder("SELECT DISTINCT b.* FROM building b ");
         joinTable(buildingSearchBuilder, sql);
         StringBuilder where = new StringBuilder(" Where 1 = 1 ");
@@ -111,6 +114,19 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         querySpecial(buildingSearchBuilder, where);
         sql.append(where);
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
-        return query.getResultList();
+        /*
+            query.setFirstResult(vi_tri_bat-dau)
+            getOffset() là được tính từ pageReuqest.of(pageNumber,maxPageItem)
+            Offset = pageNumber * pageSize.
+            PageRequest.of(2, 5) -> OFFSET = 10, LIMIT = 5.
+        */
+        query.setFirstResult((int) pageable.getOffset()); // Bắt đầu lấy record thứ...
+        query.setMaxResults(pageable.getPageSize()); // Quy định tối đa lấy bao nhiêu record
+        StringBuilder countSql = new StringBuilder("SELECT COUNT(DISTINCT b.id) FROM building b ");
+        joinTable(buildingSearchBuilder, countSql);
+        countSql.append(where);
+        Query countQuery = entityManager.createNativeQuery(countSql.toString());
+        long total = ((Number) countQuery.getSingleResult()).longValue();
+        return new PageImpl<>(query.getResultList(), pageable, total);
     }
 }

@@ -11,4 +11,13 @@ public class SystemConstant {
     public static final String ALERT = "alert";
     public static final String MESSAGE_RESPONSE = "messageResponse";
     public static final String PASSWORD_DEFAULT = "123456";
+
+    // Dùng cho hasRole()
+    public static final String MANAGER = "MANAGER";
+    public static final String STAFF = "STAFF";
+    public static final String USER = "USER";
+
+    // Dùng cho phân trang
+    public static final Integer MAX_PAGE_ITEM = 5;
+    public static final Integer MAX_NAVIGATION_PAGE = 10;
 }

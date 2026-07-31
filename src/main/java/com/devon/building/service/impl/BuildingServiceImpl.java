@@ -19,6 +19,10 @@ import com.devon.building.service.BuildingService;
 import com.devon.building.service.RentAreaService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,15 +41,16 @@ public class BuildingServiceImpl implements BuildingService {
     private final UserRepository userRepository;
 
     @Override
-    public List<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
+    public Page<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
         BuildingSearchBuilder buildingSearchBuilder = buildingConverter.toBuildingSearchBuilder(buildingSearchRequest);
-        List<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder);
+        Pageable pageable = PageRequest.of(buildingSearchRequest.getPage() - 1, SystemConstant.MAX_PAGE_ITEM);
+        Page<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder, pageable);
         List<BuildingSearchResponse> responses = new ArrayList<>();
-        for(BuildingEntity building : buildingEntity){
+        for(BuildingEntity building : buildingEntity.getContent()){
             BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingResponse(building);
             responses.add(buildingSearchResponse);
         }
-        return responses;
+        return new PageImpl<>(responses, pageable, buildingEntity.getTotalElements());
     }
 
     @Override

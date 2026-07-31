@@ -56,6 +56,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserInfo(String username) {
+        return userRepository.findByUserNameAndActiveTrue(username);
+    }
+
+    @Override
     public void save(UserDTO userDTO) {
         String userName = userDTO.getUserName();
         User user = null;
