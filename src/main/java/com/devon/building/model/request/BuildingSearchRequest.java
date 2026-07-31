@@ -32,9 +32,4 @@ public class BuildingSearchRequest {
 
     @Min(1)
     Integer page = 1;
-
-//    @Min(1)
-//    @Max(100)
-//    Integer size = 10;
-
 }

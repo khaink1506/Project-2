@@ -32,7 +32,6 @@ public class BuildingController {
     @GetMapping("/list")
     public ModelAndView getAllBuildings(@ModelAttribute BuildingSearchRequest buildingSearchRequest){
         ModelAndView modelAndView = new ModelAndView("admin/building/buildingList");
-
         if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
             User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
             buildingSearchRequest.setStaffId(user.getId());

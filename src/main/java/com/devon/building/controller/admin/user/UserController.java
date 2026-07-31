@@ -93,13 +93,12 @@ public class UserController {
     }
 
     @GetMapping("/userImage")
-    public void productImage(HttpServletRequest request, HttpServletResponse response, Model model, @RequestParam(value = "userName", defaultValue = "") String userName) throws IOException {
+    public void userImage(HttpServletRequest request, HttpServletResponse response, Model model, @RequestParam(value = "userName", defaultValue = "") String userName) throws IOException {
         User user = null;
         if (userName != null && !userName.isBlank()) {
             user = userRepository.findByUserName(userName);
         }
         if (user != null && user.getImage() != null) {
-            response.setContentType("image/jpeg");
             response.setContentType("image/png");
             response.getOutputStream().write(user.getImage());
         }

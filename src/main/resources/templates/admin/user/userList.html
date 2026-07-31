@@ -178,6 +178,13 @@
         $('#page').val(page);
         $('#listForm').submit();
     }
+
+    $('#btnSearch').click(function (e) {
+        e.preventDefault(); // Ngan chặn hành động mặc định của nút submit
+        $('#page').val(1);
+        $('#listForm').submit(); // Gửi form sau khi đã ngăn chặn hành động mặc định
+
+    });
     $('#checkAll').on('change', function () {
         const isChecked = $(this).prop('checked');
         $('.check-box-element').prop('checked', isChecked);

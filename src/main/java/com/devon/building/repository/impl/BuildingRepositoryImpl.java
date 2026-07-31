@@ -113,13 +113,16 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
         querySpecial(buildingSearchBuilder, where);
         sql.append(where);
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
+
         /*
-            Bắt đầu lấy từ bản ghi thứ.
-            Cú pháp : query.setFirstResult(vi_tri_bat-dau)
+            query.setFirstResult(vi_tri_bat-dau)
             getOffset() là được tính từ pageReuqest.of(pageNumber,maxPageItem)
+            Offset = pageNumber * pageSize.
+            PageRequest.of(2, 5) -> OFFSET = 10, LIMIT = 5.
         */
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
+
+        query.setFirstResult((int) pageable.getOffset()); // Bắt đầu lấy record thứ...
+        query.setMaxResults(pageable.getPageSize()); // Quy định tối đa lấy bao nhiêu record
         StringBuilder countSql = new StringBuilder("SELECT COUNT(DISTINCT b.id) FROM building b ");
         joinTable(buildingSearchBuilder, countSql);
         countSql.append(where);
