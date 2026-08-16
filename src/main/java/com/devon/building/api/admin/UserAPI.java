@@ -22,7 +22,7 @@ public class UserAPI {
     private UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createUser(@Valid @ModelAttribute UserDTO user, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> createUser(@Valid @RequestBody UserDTO user, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             if (bindingResult.hasErrors()) {
@@ -42,7 +42,7 @@ public class UserAPI {
     }
 
     @PutMapping
-    public ResponseEntity<?> updateUser(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+    public ResponseEntity<ResponseDTO> updateUser(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         ResponseDTO responseDTO = new ResponseDTO();
         try {
             if (bindingResult.hasErrors()) {
@@ -62,7 +62,7 @@ public class UserAPI {
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteUsers(@RequestBody List<Long> idList) {
+    public ResponseEntity<Object> deleteUsers(@RequestBody List<Long> idList) {
         if (!idList.isEmpty()) {
             userService.delete(idList);
         }
@@ -70,7 +70,7 @@ public class UserAPI {
     }
 
     @PutMapping("/password/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody PasswordDTO passwordDTO) {
+    public ResponseEntity<ResponseDTO> updateUser(@PathVariable Long id, @RequestBody PasswordDTO passwordDTO) {
         ResponseDTO responseDTO = new ResponseDTO();
         return ResponseEntity.ok().body(responseDTO);
     }

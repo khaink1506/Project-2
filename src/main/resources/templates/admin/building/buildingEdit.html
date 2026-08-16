@@ -275,6 +275,24 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group">
+                                                <label class="col-sm-3 control-label no-padding-right">Image</label>
+
+                                                <div class="col-sm-5 text-center">
+                                                    <img id="avatar" alt="avatar"
+                                                         th:src="@{|/admin/buildings/image?id=${building.id}|}"
+                                                         class="img-thumbnail"
+                                                         style="max-width: 250px;">
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-sm-3 control-label no-padding-right">Upload Image</label>
+                                                <div class="col-sm-5 text-center">
+                                                    <input type="file" class="form-control-file" id="exampleFormControlFile1"
+                                                           th:field="*{fileData}">
+                                                </div>
+                                            </div>
                                             <div class="clearfix form-actions-center">
                                                 <div class="col-md-12 text-center">
                                                     <a class="btn btn-danger" th:href="@{/admin/buildings/list}">
@@ -346,29 +364,49 @@
         return isValid;
     }
 
-    $('#btnAddOrUpdateBuilding').click(function(e){
+    const toBase64 = file => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+
+    $('#btnAddOrUpdateBuilding').click(async function (e) {
         e.preventDefault();
         const data = {}; // Object
-        const formData =$('#building-edit-form').serializeArray(); // Truyền dữ liệu từ form về dạng mạng các Object
-        const typeCode= [];
-        $.each(formData, function(i, field){
-            if(field.name === 'typeCode'){
+        const formData = $('#building-edit-form').serializeArray(); // Truyền dữ liệu từ form về dạng mạng các Object
+        const typeCode = [];
+        $.each(formData, function (i, field) {
+            if (field.name === 'typeCode') {
                 typeCode.push(field.value);
-            }else{
+            } else {
                 data[field.name] = field.value; // Lấy name của input làm key, value của input làm value
             }
         });
         data['typeCode'] = typeCode; // Gán mảng typeCode vào data
 
-        if(!validateData(data)){
+        if (!validateData(data)) {
             alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
             return;
         }
 
         let type = 'POST';
-        if(data['id'] != null && data['id'].trim() !== ''){
+        if (data['id'] != null && data['id'].trim() !== '') {
             type = 'PUT';
         }
+        $('#avatar').show();
+        const fileInput = $('#exampleFormControlFile1')[0].files[0];
+        if (fileInput) {
+            try {
+                data.base64Image = await toBase64(fileInput);
+                data.imageName = fileInput.name;
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi đọc file ảnh");
+                return;
+            }
+        }
+
         $.ajax({
             url: '/api/buildings', // API endpoint
             type: type, // request method
@@ -376,15 +414,39 @@
             timeout: 10000, // Thời gian chờ phản hồi từ server (10 giây)
             data: JSON.stringify(data), // Chuyển data thành chuỗi JSON String
             dataType: 'json', // Kiểu dữ liệu trả về từ server
-            success: function(response){
+            success: function (response) {
                 alert(response.message);
                 window.location.href = '/admin/buildings/list';
             },
-            error: function(response){
+            error: function (response) {
                 alert(response.responseJSON.detail.join('\n'));
             }
         });
     });
+    let imageBase64 = '';
+    let imageName = '';
+
+    $('#exampleFormControlFile1').change(function (event) {
+        event.preventDefault();
+        const reader = new FileReader();
+        const file = $(this)[0].files[0];
+        reader.onload = function (e) {
+            imageBase64 = e.target.result;
+            imageName = file.name.replace(/\s+/g, '-').toLowerCase();
+        };
+        reader.readAsDataURL(file);
+        openImage(this, "avatar");
+    });
+
+    function openImage(input, imageView) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $('#' + imageView).attr('src', reader.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 </body>
 </html>

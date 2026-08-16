@@ -51,7 +51,7 @@ public class AdminController {
     }
 
     // GET: Show Login Page
-    @GetMapping(value = {"/admin/login"})
+    @GetMapping(value = {"/login"})
     public String login(Model model) {
         return "login";
     }

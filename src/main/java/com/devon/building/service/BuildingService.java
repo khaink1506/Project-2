@@ -1,5 +1,6 @@
 package com.devon.building.service;
 
+import com.devon.building.entity.BuildingEntity;
 import com.devon.building.model.dto.AssignBuildingDTO;
 import com.devon.building.model.dto.BuildingDTO;
 import com.devon.building.model.dto.ResponseDTO;
@@ -20,7 +21,10 @@ public interface BuildingService {
 
     BuildingDTO findById(Long id);
 
+    BuildingEntity findEntityById(Long id);
+
     ResponseDTO loadStaffs(Long buildingId);
 
     ResponseDTO assignmentBuilding(AssignBuildingDTO assignBuildingDTO);
+
 }

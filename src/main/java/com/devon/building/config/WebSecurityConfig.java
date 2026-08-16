@@ -1,11 +1,13 @@
 package com.devon.building.config;
 
 
+import com.devon.building.constant.SystemConstant;
 import com.devon.building.security.CustomSuccessHandler;
 import com.devon.building.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,7 +32,8 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -40,22 +43,24 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/admin/**").hasAnyRole("STAFF", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/buildings/assign").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers("/admin/users/**").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers("/admin/**").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
-                        .loginPage("/admin/login")
+                        .loginPage("/login")
                         .loginProcessingUrl("/j_spring_security_check")
                         .successHandler(myAuthenticationSuccessHandler())
-//                        .defaultSuccessUrl("/admin/accountInfo", true)
-                        .failureUrl("/admin/login?incorrectAccount")
+                        .failureUrl("/login?incorrectAccount")
                         .usernameParameter("userName")
                         .passwordParameter("password")
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/admin/logout")
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                         .permitAll()
                 );

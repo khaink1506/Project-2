@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -48,4 +49,7 @@ public class BuildingDTO {
     String rentArea;
     @NotEmpty(message = "Loại tòa nhà không được để trống")
     List<String> typeCode;
+    private MultipartFile fileData;
+    private String base64Image;
+    private String imageName;
 }

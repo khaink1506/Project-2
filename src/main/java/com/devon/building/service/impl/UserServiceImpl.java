@@ -2,18 +2,17 @@ package com.devon.building.service.impl;
 
 import com.devon.building.constant.SystemConstant;
 import com.devon.building.entity.User;
+import com.devon.building.exception.ResourceNotFoundException;
 import com.devon.building.model.dto.UserDTO;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.UserService;
 import jakarta.persistence.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +55,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserInfo(String username) {
-        return userRepository.findByUserNameAndActiveTrue(username);
-    }
-
-    @Override
     public void save(UserDTO userDTO) {
         String userName = userDTO.getUserName();
         User user = null;
@@ -74,18 +68,19 @@ public class UserServiceImpl implements UserService {
         user.setUserName(userName);
         user.setActive(true);
         user.setFullName(userDTO.getFullName());
-        user.setEncrytedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
+        user.setEncryptedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
         user.setUserRole(User.ROLE_MANAGER);
-        if (userDTO.getFileData() != null) {
-            byte[] image = null;
-            try {
-                image = userDTO.getFileData().getBytes();
-            } catch (IOException e) {
-                throw new RuntimeException("Invalid image data", e);
+        try {
+            if (userDTO.getBase64Image() != null && !userDTO.getBase64Image().isEmpty()) {
+                String base64String = userDTO.getBase64Image();
+                if (base64String.contains(",")) {
+                    base64String = base64String.split(",")[1];
+                }
+                byte[] imageBytes = Base64.getDecoder().decode(base64String);
+                user.setImage(imageBytes);
             }
-            if (image != null && image.length > 0) {
-                user.setImage(image);
-            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid image data", e);
         }
         entityManager.persist(user);
         entityManager.flush();
@@ -127,6 +122,15 @@ public class UserServiceImpl implements UserService {
             user.ifPresent(value -> value.setActive(false));
             userRepository.flush();
         }
+    }
+
+    @Override
+    public User getUserByUsername(String username) {
+        User user = userRepository.findByUserNameAndActiveTrue(username);
+        if(user == null){
+            throw new ResourceNotFoundException();
+        }
+        return user;
     }
 
     @Override

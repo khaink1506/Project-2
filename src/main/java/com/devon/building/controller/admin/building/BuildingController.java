@@ -1,25 +1,30 @@
 package com.devon.building.controller.admin.building;
 
 import com.devon.building.constant.SystemConstant;
+import com.devon.building.converter.BuildingConverter;
+import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.User;
 import com.devon.building.enums.District;
 import com.devon.building.enums.RentType;
 import com.devon.building.model.dto.BuildingDTO;
+import com.devon.building.model.dto.UserDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
+import com.devon.building.repository.BuildingRepository;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.UserService;
 import com.devon.building.utils.SecurityUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.List;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/buildings")
@@ -30,13 +35,15 @@ public class BuildingController {
     private final BuildingService buildingService;
     private static final String DISTRICT = "districts";
     private static final String RENT_TYPE = "rentTypes";
+    private final BuildingRepository buildingRepository;
+    private final BuildingConverter buildingConverter;
 
     @GetMapping("/list")
     public ModelAndView getAllBuildings(@ModelAttribute BuildingSearchRequest buildingSearchRequest){
-//        if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
-//            User user = userService.getUserInfo(SecurityUtils.getCurrentUsername());
-//            buildingSearchRequest.setStaffId(user.getId());
-//        }
+        if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
+            User user = userService.getUserByUsername(SecurityUtils.getCurrentUsername());
+            buildingSearchRequest.setStaffId(user.getId());
+        }
         ModelAndView modelAndView = new ModelAndView("admin/building/buildingList");
         modelAndView.addObject("staffs", userService.loadStaff());
         modelAndView.addObject(DISTRICT, District.getDistricMap());
@@ -60,10 +67,27 @@ public class BuildingController {
     @GetMapping("/{id}/update")
     public ModelAndView getUpdateBuilding(@PathVariable Long id){
         ModelAndView modelAndView = new ModelAndView("admin/building/buildingEdit");
+        if(SecurityUtils.getAuthorities().contains(SystemConstant.STAFF_ROLE)){
+            User staff = userService.getUserByUsername(SecurityUtils.getCurrentUsername());
+            if(staff.getBuilding().stream().noneMatch(building -> building.getId().equals(id))){
+                return new ModelAndView("404");
+            }
+        }
         BuildingDTO buildingDTO = buildingService.findById(id);
         modelAndView.addObject("building", buildingDTO);
         modelAndView.addObject(DISTRICT, District.getDistricMap());
         modelAndView.addObject(RENT_TYPE, RentType.getRentTypeMap());
         return modelAndView;
+    }
+
+    @GetMapping("/image")
+    public ResponseEntity<byte[]> buildingImage(@RequestParam Long id) {
+        BuildingEntity building = buildingService.findEntityById(id);
+        if (building.getImage() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_PNG)
+                .body(building.getImage());
     }
 }

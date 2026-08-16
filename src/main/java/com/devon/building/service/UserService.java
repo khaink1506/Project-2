@@ -10,13 +10,13 @@ import java.util.Map;
 public interface UserService {
     PaginationResult<User> listUserInfo(String key,int page, int maxResult, int maxNavigationPage);
 
-    User getUserInfo(String username);
-
     void save(UserDTO userDTO);
 
     void update(UserDTO userDTO);
 
     void delete(List<Long> ids);
+
+    User getUserByUsername(String username);
 
     Map<Long, String> loadStaff();
 

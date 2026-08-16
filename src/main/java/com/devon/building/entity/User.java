@@ -9,7 +9,9 @@ import lombok.Setter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "User")
@@ -31,7 +33,7 @@ public class User extends BaseEntity implements Serializable{
     private String userName;
 
     @Column(name = "password", length = 128, nullable = false)
-    private String encrytedPassword;
+    private String encryptedPassword;
 
     @Column(name = "Active", length = 1, nullable = false)
     private boolean active;
@@ -55,7 +57,7 @@ public class User extends BaseEntity implements Serializable{
     private byte[] image;
 
     @ManyToMany(mappedBy = "user")
-     private List<BuildingEntity> building = new ArrayList<>();
+    private Set<BuildingEntity> building = new HashSet<>();
 
     public User(Long id, String userName, Boolean active, String userRole, String fullName, String phone) {
         this.id = id;
@@ -68,7 +70,7 @@ public class User extends BaseEntity implements Serializable{
 
     @Override
     public String toString() {
-        return "[" + this.userName + "," + this.encrytedPassword + "," + this.userRole + "]";
+        return "[" + this.userName + "," + this.encryptedPassword + "," + this.userRole + "]";
     }
 
 }

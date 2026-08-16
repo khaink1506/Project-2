@@ -32,4 +32,15 @@ public class GlobalExceptionHandler {
         responseDTO.setDetail(details);
         return ResponseEntity.badRequest().body(responseDTO);
     }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ResponseDTO> handleResourceNotFoundException(ResourceNotFoundException ex){
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage(ex.getMessage());
+        List<String> details = new ArrayList<>();
+        responseDTO.setDetail(details);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+
+    }
 }
+

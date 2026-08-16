@@ -25,10 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,7 +41,10 @@ public class BuildingServiceImpl implements BuildingService {
     public Page<BuildingSearchResponse> findBuilding(BuildingSearchRequest buildingSearchRequest) {
         BuildingSearchBuilder buildingSearchBuilder = buildingConverter.toBuildingSearchBuilder(buildingSearchRequest);
         Pageable pageable = PageRequest.of(buildingSearchRequest.getPage() - 1, SystemConstant.MAX_PAGE_ITEM);
+
+//        Specification<BuildingEntity> specification = BuildingSpecification.filter(buildingSearchBuilder);
         Page<BuildingEntity> buildingEntity = buildingRepository.findALlBuilding(buildingSearchBuilder, pageable);
+//        Page<BuildingEntity> buildingEntity = buildingRepository.findAll(specification, pageable);
         List<BuildingSearchResponse> responses = new ArrayList<>();
         for(BuildingEntity building : buildingEntity.getContent()){
             BuildingSearchResponse buildingSearchResponse = buildingConverter.toBuildingResponse(building);
@@ -59,6 +59,18 @@ public class BuildingServiceImpl implements BuildingService {
         BuildingEntity buildingEntity = buildingConverter.toBuildingEntity(buildingDTO);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
         rentAreaService.saveOrUpdateRentArea(buildingEntity,buildingDTO.getRentArea());
+        try {
+            if (buildingDTO.getBase64Image() != null && !buildingDTO.getBase64Image().isEmpty()) {
+                String base64String = buildingDTO.getBase64Image();
+                if (base64String.contains(",")) {
+                    base64String = base64String.split(",")[1];
+                }
+                byte[] imageBytes = Base64.getDecoder().decode(base64String);
+                buildingEntity.setImage(imageBytes);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid image data", e);
+        }
         buildingRepository.save(buildingEntity);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("Tạo tòa nhà thành công");
@@ -76,6 +88,18 @@ public class BuildingServiceImpl implements BuildingService {
         buildingConverter.updateBuildingEntity(buildingDTO, buildingEntity);
         buildingEntity.setRentType(String.join(", ", buildingDTO.getTypeCode()));
         rentAreaService.saveOrUpdateRentArea(buildingEntity, buildingDTO.getRentArea());
+        try {
+            if (buildingDTO.getBase64Image() != null && !buildingDTO.getBase64Image().isEmpty()) {
+                String base64String = buildingDTO.getBase64Image();
+                if (base64String.contains(",")) {
+                    base64String = base64String.split(",")[1];
+                }
+                byte[] imageBytes = Base64.getDecoder().decode(base64String);
+                buildingEntity.setImage(imageBytes);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Invalid image data", e);
+        }
         buildingRepository.save(buildingEntity);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("Cập nhật tòa nhà thành công");
@@ -114,6 +138,12 @@ public class BuildingServiceImpl implements BuildingService {
         buildingDTO.setRentArea(rentArea);
         buildingDTO.setTypeCode( Arrays.stream(buildingEntity.getRentType().split(",")).map(String::trim).toList());
         return buildingDTO;
+    }
+
+    @Override
+    public BuildingEntity findEntityById(Long id) {
+        return buildingRepository.findById(id)
+                .orElseThrow(() -> new InvalidRequestException("Không tìm thấy tòa nhà có ID: " + id));
     }
 
     @Override

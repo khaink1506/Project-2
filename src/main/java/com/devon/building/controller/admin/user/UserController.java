@@ -99,6 +99,7 @@ public class UserController {
             user = userRepository.findByUserName(userName);
         }
         if (user != null && user.getImage() != null) {
+            response.setContentType("image/jpg");
             response.setContentType("image/png");
             response.getOutputStream().write(user.getImage());
         }

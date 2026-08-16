@@ -98,7 +98,7 @@
                                     <img id="avatar" alt="avatar"
                                          th:src="@{|/admin/users/userImage?userName=${user.userName}|}"
                                          class="img-thumbnail"
-                                         style="max-width: 150px;">
+                                         style="max-width: 250px;">
                                 </div>
                             </div>
 
@@ -181,22 +181,21 @@
         };
 
         if (!validateData(dataObj)) return;
+        $('#avatar').show();
+        const fileInput = $('#exampleFormControlFile1')[0].files[0];
+        if (fileInput) {
+            try {
+                dataObj.base64Image = await toBase64(fileInput);
+                dataObj.imageName = fileInput.name;
+            } catch (error) {
+                console.error(error);
+                alert("Lỗi đọc file ảnh");
+                return;
+            }
+        }
         if (dataObj.id === "" || dataObj.id === null) {
-            $('#avatar').show();
             saveUser(dataObj);
         } else {
-            $('#avatar').show();
-            const fileInput = $('#exampleFormControlFile1')[0].files[0];
-            if (fileInput) {
-                try {
-                    dataObj.base64Image = await toBase64(fileInput);
-                    dataObj.imageName = fileInput.name;
-                } catch (error) {
-                    console.error(error);
-                    alert("Lỗi đọc file ảnh");
-                    return;
-                }
-            }
             updateUser(dataObj);
         }
     });
@@ -220,13 +219,13 @@
         });
     }
 
-    function saveUser(formData) {
+    function saveUser(data) {
         $.ajax({
             url: '/users',
             type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            dataType: 'json',
             success: function (res) {
                 alert(res.message);
             },

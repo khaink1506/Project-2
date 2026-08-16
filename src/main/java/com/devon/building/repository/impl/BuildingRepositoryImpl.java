@@ -120,13 +120,14 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
             Offset = pageNumber * pageSize.
             PageRequest.of(2, 5) -> OFFSET = 10, LIMIT = 5.
         */
-        query.setFirstResult((int) pageable.getOffset()); // Bắt đầu lấy record thứ...
-        query.setMaxResults(pageable.getPageSize()); // Quy định tối đa lấy bao nhiêu record
-        StringBuilder countSql = new StringBuilder("SELECT COUNT(DISTINCT b.id) FROM building b ");
-        joinTable(buildingSearchBuilder, countSql);
-        countSql.append(where);
-        Query countQuery = entityManager.createNativeQuery(countSql.toString());
-        long total = ((Number) countQuery.getSingleResult()).longValue();
-        return new PageImpl<>(query.getResultList(), pageable, total);
+        List<BuildingEntity> building = query.getResultList();
+
+        int start = Math.toIntExact(pageable.getOffset());
+
+        int end = Math.min(start + pageable.getPageSize(), building.size());
+
+        List<BuildingEntity> pageContent = building.subList(start, end);
+
+        return new PageImpl<>(pageContent, pageable, building.size());
     }
 }
