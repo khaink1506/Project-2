@@ -5,6 +5,7 @@ import com.devon.building.form.CustomerForm;
 import com.devon.building.model.CartInfo;
 import com.devon.building.model.CustomerInfo;
 import com.devon.building.model.ProductInfo;
+import com.devon.building.model.request.RegisterRequest;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.impl.OrderRepository;
 import com.devon.building.repository.impl.ProductRepository;
@@ -73,6 +74,7 @@ public class MainController {
     @GetMapping("/register")
     public String register(Model model) {
         model.addAttribute("customer", new CustomerForm());
+        model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }
 

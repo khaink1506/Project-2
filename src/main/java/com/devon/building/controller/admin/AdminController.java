@@ -4,6 +4,8 @@ import com.devon.building.entity.BuildingEntity;
 import com.devon.building.form.ProductForm;
 import com.devon.building.model.OrderDetailInfo;
 import com.devon.building.model.OrderInfo;
+import com.devon.building.model.request.LoginRequest;
+import com.devon.building.model.request.RegisterRequest;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.impl.OrderRepository;
 import com.devon.building.repository.impl.ProductRepository;
@@ -53,6 +55,7 @@ public class AdminController {
     // GET: Show Login Page
     @GetMapping(value = {"/login"})
     public String login(Model model) {
+        model.addAttribute("loginRequest", new LoginRequest());
         return "login";
     }
 

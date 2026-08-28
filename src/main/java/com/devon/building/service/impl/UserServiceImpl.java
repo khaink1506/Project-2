@@ -1,10 +1,12 @@
 package com.devon.building.service.impl;
 
 import com.devon.building.constant.SystemConstant;
+import com.devon.building.entity.Role;
 import com.devon.building.entity.User;
 import com.devon.building.exception.ResourceNotFoundException;
 import com.devon.building.model.dto.UserDTO;
 import com.devon.building.pagination.PaginationResult;
+import com.devon.building.repository.RoleRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.UserService;
 import jakarta.persistence.*;
@@ -24,12 +26,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final RoleRepository roleRepository;
     @PersistenceContext
     private EntityManager entityManager;
 
     private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public PaginationResult<User> listUserInfo(String key, int page, int maxResult, int maxNavigationPage) {
@@ -69,7 +73,11 @@ public class UserServiceImpl implements UserService {
         user.setActive(true);
         user.setFullName(userDTO.getFullName());
         user.setEncryptedPassword(passwordEncoder.encode(SystemConstant.PASSWORD_DEFAULT));
-        user.setUserRole(User.ROLE_MANAGER);
+//        user.setUserRole(User.ROLE_MANAGER);
+
+        Role managerRole = roleRepository.findByCode(User.ROLE_MANAGER)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        user.setUserRole(managerRole);
         try {
             if (userDTO.getBase64Image() != null && !userDTO.getBase64Image().isEmpty()) {
                 String base64String = userDTO.getBase64Image();
@@ -98,7 +106,10 @@ public class UserServiceImpl implements UserService {
         }
         user.setUserName(userName);
         user.setActive(true);
-        user.setUserRole(userDTO.getRoleCode());
+//        user.setUserRole(userDTO.getRoleCode());
+        Role role = roleRepository.findByCode(userDTO.getRoleCode().trim())
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+        user.setUserRole(role);
         try {
             if (userDTO.getBase64Image() != null && !userDTO.getBase64Image().isEmpty()) {
                 String base64String = userDTO.getBase64Image();
@@ -126,16 +137,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUsername(String username) {
-        User user = userRepository.findByUserNameAndActiveTrue(username);
-        if(user == null){
-            throw new ResourceNotFoundException();
-        }
-        return user;
+        return userRepository.findByUserNameAndActiveTrue(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User is required"));
     }
 
     @Override
     public Map<Long, String> loadStaff() {
-        List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
+        List<User> staffs = userRepository.findAllByUserRole_CodeAndActiveTrue(SystemConstant.STAFF_ROLE);
         return staffs.stream().collect(Collectors.toMap(User::getId, User::getUserName));
     }
 }

@@ -150,7 +150,7 @@ public class BuildingServiceImpl implements BuildingService {
     public ResponseDTO loadStaffs(Long buildingId) {
         BuildingEntity buildingEntity = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thầy tòa nhà có ID: " + buildingId));
-        List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
+        List<User> staffs = userRepository.findAllByUserRole_CodeAndActiveTrue(SystemConstant.STAFF_ROLE);
         Set<Long> assignmentStaffs = buildingEntity.getUser()
                 .stream().map(User::getId).collect(Collectors.toSet());
         List<StaffResponseDTO> staffResponse = buildStaffResponses(staffs, assignmentStaffs);

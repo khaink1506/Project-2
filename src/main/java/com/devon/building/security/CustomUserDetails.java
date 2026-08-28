@@ -2,10 +2,12 @@ package com.devon.building.security;
 
 import com.devon.building.entity.User;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,9 +20,11 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(
-                new SimpleGrantedAuthority(user.getUserRole())
-        );
+        List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+        if (user.getUserRole()!= null && user.getUserRole().getCode() != null) {
+            authorityList.add(new SimpleGrantedAuthority(user.getUserRole().getCode()));
+        }
+        return authorityList;
     }
 
     @Override

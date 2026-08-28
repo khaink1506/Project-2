@@ -38,8 +38,12 @@ public class User extends BaseEntity implements Serializable{
     @Column(name = "Active", length = 1, nullable = false)
     private boolean active;
 
-    @Column(name = "userrole", length = 20, nullable = false)
-    private String userRole;
+//    @Column(name = "userrole", length = 20, nullable = false)
+//    private String userRole;
+
+    @ManyToOne
+    @JoinColumn(name = "userrole", referencedColumnName = "code", nullable = false)
+    private Role userRole;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +63,7 @@ public class User extends BaseEntity implements Serializable{
     @ManyToMany(mappedBy = "user")
     private Set<BuildingEntity> building = new HashSet<>();
 
-    public User(Long id, String userName, Boolean active, String userRole, String fullName, String phone) {
+    public User(Long id, String userName, Boolean active, Role userRole, String fullName, String phone) {
         this.id = id;
         this.userName = userName;
         this.active = active;

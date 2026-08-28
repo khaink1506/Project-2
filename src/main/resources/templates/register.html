@@ -35,16 +35,13 @@
                     </div>
 
                     <!-- Form -->
-                    <form id="registerForm"
-                          th:action="@{/api/user/register}"
-                          method="post">
-
+                    <form id="registerForm" th:object="${registerRequest}">
                         <!-- Full Name -->
                         <div class="form-group">
                             <label class="form-label" for="fullName">
                                 <i class="fas fa-user me-1"></i>Full Name
                             </label>
-                            <input type="text" id="fullName" name="fullName"
+                            <input type="text" id="fullName" th:field="*{fullName}"
                                    class="form-control"
                                    placeholder="Enter your full name"
                                    required>
@@ -55,7 +52,7 @@
                             <label class="form-label" for="username">
                                 <i class="fas fa-at me-1"></i>Username
                             </label>
-                            <input type="text" id="username" name="username"
+                            <input type="text" id="username" th:field="*{userName}"
                                    class="form-control"
                                    placeholder="Choose a username"
                                    required>
@@ -68,7 +65,7 @@
                             </label>
                             <div class="password-field">
                                 <input type="password" id="password"
-                                       name="password" class="form-control"
+                                       th:field="*{password}" class="form-control"
                                        placeholder="Create a strong password"
                                        required>
                                 <button type="button" class="password-toggle"
@@ -85,7 +82,7 @@
                             </label>
                             <div class="password-field">
                                 <input type="password" id="confirmPassword"
-                                       name="confirmPassword"
+                                       th:field="*{confirmPassword}"
                                        class="form-control"
                                        placeholder="Re-enter your password"
                                        required>
@@ -102,7 +99,7 @@
                                 <input class="form-check-input"
                                        type="checkbox"
                                        id="isAgreeTerms"
-                                       name="isAgreeTerms">
+                                       th:field="*{isAgreeTerms}">
                                 <label class="form-check-label" for="isAgreeTerms">
                                     I agree to all statements in
                                     <a href="#" class="terms-link">Terms of Service</a>
@@ -201,7 +198,7 @@
 
         const formData = {
             fullName: fullName,
-            username: username,
+            userName: username,
             password: password,
             confirmPassword: confirmPassword
         };
@@ -247,7 +244,9 @@
                 // Reset button
                 registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
                 registerBtn.disabled = false;
-            });
+
+
+
     });
 </script>
 </body>

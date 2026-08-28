@@ -4,6 +4,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class SystemConstant {
+
     public static final String USER_ROLE = "ROLE_USER";
     public static final String MANAGER_ROLE = "ROLE_MANAGER";
     public static final String STAFF_ROLE = "ROLE_STAFF";

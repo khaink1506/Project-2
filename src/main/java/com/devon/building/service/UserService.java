@@ -1,7 +1,11 @@
 package com.devon.building.service;
 
 import com.devon.building.entity.User;
+import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.request.LoginRequest;
+import com.devon.building.model.request.RegisterRequest;
+import com.devon.building.model.response.LoginResponse;
 import com.devon.building.pagination.PaginationResult;
 
 import java.util.List;
@@ -19,6 +23,7 @@ public interface UserService {
     User getUserByUsername(String username);
 
     Map<Long, String> loadStaff();
+
 
 }
 

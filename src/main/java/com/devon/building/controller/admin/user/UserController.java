@@ -3,6 +3,7 @@ package com.devon.building.controller.admin.user;
 import com.devon.building.constant.SystemConstant;
 import com.devon.building.entity.User;
 import com.devon.building.model.dto.UserDTO;
+import com.devon.building.model.request.RegisterRequest;
 import com.devon.building.model.request.UserSearchRequest;
 import com.devon.building.pagination.PaginationResult;
 import com.devon.building.repository.UserRepository;
@@ -14,10 +15,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -73,7 +71,8 @@ public class UserController {
                 userDTO.setId(user.getId());
                 userDTO.setUserName(user.getUserName());
                 userDTO.setFullName(user.getFullName());
-                userDTO.setRoleCode(user.getUserRole());
+//                userDTO.setRoleCode(user.getUserRole());
+                userDTO.setRoleCode(user.getUserRole().getCode());
                 userDTO.initRoles();
             }
         }
@@ -116,7 +115,8 @@ public class UserController {
             user.setId(userEntity.getId());
             user.setUserName(userEntity.getUserName());
             user.setFullName(userEntity.getFullName());
-            user.setRoleCode(userEntity.getUserRole());
+//            user.setRoleCode(userEntity.getUserRole());
+            user.setRoleCode(userEntity.getUserRole().getCode());
             user.initRoles();
         }
         initMessageResponse(modelAndView, request);
