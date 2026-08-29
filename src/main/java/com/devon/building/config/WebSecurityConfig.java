@@ -55,7 +55,7 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/login", "/api/user/register").permitAll()
+                        .requestMatchers("/api/user/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/buildings/**").hasAnyRole(SystemConstant.USER, SystemConstant.STAFF, SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.POST, "/api/buildings").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.PUT, "/api/buildings/assign").hasRole(SystemConstant.MANAGER)
@@ -66,15 +66,15 @@ public class WebSecurityConfig {
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
-//                .formLogin(form -> form
-//                        .loginPage("/login")
-//                        .loginProcessingUrl("/j_spring_security_check")
-//                        .successHandler(myAuthenticationSuccessHandler())
-//                        .failureUrl("/login?incorrectAccount")
-//                        .usernameParameter("userName")
-//                        .passwordParameter("password")
-//                        .permitAll()
-//                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/j_spring_security_check") // /j_spring_security_check
+                        .successHandler(myAuthenticationSuccessHandler())
+                        .failureUrl("/login?incorrectAccount")
+                        .usernameParameter("userName")
+                        .passwordParameter("password")
+                        .permitAll()
+                )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")

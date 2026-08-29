@@ -73,7 +73,7 @@ public class MainController {
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("customer", new CustomerForm());
+//        model.addAttribute("customer", new CustomerForm());
         model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }

@@ -55,7 +55,6 @@ public class AdminController {
     // GET: Show Login Page
     @GetMapping(value = {"/login"})
     public String login(Model model) {
-        model.addAttribute("loginRequest", new LoginRequest());
         return "login";
     }
 
