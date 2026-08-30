@@ -37,8 +37,7 @@ public class WebSecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -68,7 +67,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/j_spring_security_check") // /j_spring_security_check
+                        .loginProcessingUrl("/login") // /j_spring_security_check
                         .successHandler(myAuthenticationSuccessHandler())
                         .failureUrl("/login?incorrectAccount")
                         .usernameParameter("userName")

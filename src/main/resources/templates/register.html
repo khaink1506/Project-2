@@ -41,7 +41,7 @@
                             <label class="form-label" for="fullName">
                                 <i class="fas fa-user me-1"></i>Full Name
                             </label>
-                            <input type="text" id="fullName" th:field="*{fullName}"
+                            <input type="text" id="fullName" th:field="${registerRequest.fullName}"
                                    class="form-control"
                                    placeholder="Enter your full name"
                                    required>
@@ -52,7 +52,7 @@
                             <label class="form-label" for="username">
                                 <i class="fas fa-at me-1"></i>Username
                             </label>
-                            <input type="text" id="username" th:field="*{userName}"
+                            <input type="text" id="username" th:field="${registerRequest.userName}"
                                    class="form-control"
                                    placeholder="Choose a username"
                                    required>
@@ -65,7 +65,7 @@
                             </label>
                             <div class="password-field">
                                 <input type="password" id="password"
-                                       th:field="*{password}" class="form-control"
+                                       th:field="${registerRequest.password}" class="form-control"
                                        placeholder="Create a strong password"
                                        required>
                                 <button type="button" class="password-toggle"
@@ -82,7 +82,7 @@
                             </label>
                             <div class="password-field">
                                 <input type="password" id="confirmPassword"
-                                       th:field="*{confirmPassword}"
+                                       th:field="${registerRequest.confirmPassword}"
                                        class="form-control"
                                        placeholder="Re-enter your password"
                                        required>
@@ -99,7 +99,7 @@
                                 <input class="form-check-input"
                                        type="checkbox"
                                        id="isAgreeTerms"
-                                       th:field="*{isAgreeTerms}">
+                                       th:field="${registerRequest.isAgreeTerms}">
                                 <label class="form-check-label" for="isAgreeTerms">
                                     I agree to all statements in
                                     <a href="#" class="terms-link">Terms of Service</a>

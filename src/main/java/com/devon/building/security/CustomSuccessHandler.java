@@ -31,7 +31,6 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         if (response.isCommitted()) {
             return;
         }
-
         redirectStrategy.sendRedirect(request, response, targetUrl);
     }
 

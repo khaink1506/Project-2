@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +64,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 request.getUsername(),
                 request.getPassword()
         ));
-
-        String accessToken = jwtService.generateAccessToken(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        String accessToken = jwtService.generateAccessToken(userDetails);
         return LoginResponse.builder()
                 .message("Login SuccessFully")
                 .token(accessToken)
