@@ -1,10 +1,7 @@
 package com.devon.building.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,6 +16,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class User extends BaseEntity implements Serializable{
 
     @Serial
@@ -62,6 +60,12 @@ public class User extends BaseEntity implements Serializable{
 
     @ManyToMany(mappedBy = "user")
     private Set<BuildingEntity> building = new HashSet<>();
+
+    @Column(name = "facebook_account_id")
+    String facebookAccountId;
+
+    @Column(name = "google_account_id")
+    String googleAccountId;
 
     public User(Long id, String userName, Boolean active, Role userRole, String fullName, String phone) {
         this.id = id;
