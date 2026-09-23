@@ -1,6 +1,5 @@
 package com.devon.building.model.request;
 
-import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

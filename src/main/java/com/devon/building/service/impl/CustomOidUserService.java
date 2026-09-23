@@ -5,26 +5,20 @@ import com.devon.building.entity.Role;
 import com.devon.building.entity.User;
 import com.devon.building.repository.RoleRepository;
 import com.devon.building.repository.UserRepository;
+import com.devon.building.utils.OAuth2PictureFetcher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.OAuth2Error;
-import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -35,6 +29,7 @@ public class CustomOidUserService extends OidcUserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final OAuth2PictureFetcher oAuth2PictureFetcher;
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
@@ -47,6 +42,7 @@ public class CustomOidUserService extends OidcUserService {
         User user = userRepository.findByUserNameAndActiveTrue(email)
                 .orElseGet(() -> {
                     log.info("User not found, create new user");
+                    // Tạo mới user
                     return createGoogleUser(oidcUser);
                 });
 
@@ -66,6 +62,7 @@ public class CustomOidUserService extends OidcUserService {
                         .fullName(oidcUser.getFullName())
                         .googleAccountId(oidcUser.getAttributes().get("sub").toString())
                         .encryptedPassword(passwordEncoder.encode(UUID.randomUUID().toString()))
+                        .image(oAuth2PictureFetcher.fetchGoogleProfilePicture(oidcUser.getAttributes().get("picture").toString()))
                 .build());
     }
 
