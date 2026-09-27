@@ -42,5 +42,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
 
     }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ResponseDTO> handleDuplicateResourceException(DuplicateResourceException e){
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage(e.getMessage());
+        List<String> details = new ArrayList<>();
+        responseDTO.setDetail(details);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(responseDTO);
+    }
 }
 

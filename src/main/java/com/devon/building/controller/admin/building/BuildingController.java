@@ -1,20 +1,16 @@
 package com.devon.building.controller.admin.building;
 
 import com.devon.building.constant.SystemConstant;
-import com.devon.building.converter.BuildingConverter;
 import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.User;
 import com.devon.building.enums.District;
 import com.devon.building.enums.RentType;
 import com.devon.building.model.dto.BuildingDTO;
-import com.devon.building.model.dto.UserDTO;
 import com.devon.building.model.request.BuildingSearchRequest;
 import com.devon.building.model.response.BuildingSearchResponse;
-import com.devon.building.repository.BuildingRepository;
 import com.devon.building.service.BuildingService;
 import com.devon.building.service.UserService;
 import com.devon.building.utils.SecurityUtils;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
@@ -22,9 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
-
-import java.io.IOException;
 
 @Controller
 @RequestMapping("/admin/buildings")
@@ -35,8 +28,7 @@ public class BuildingController {
     private final BuildingService buildingService;
     private static final String DISTRICT = "districts";
     private static final String RENT_TYPE = "rentTypes";
-    private final BuildingRepository buildingRepository;
-    private final BuildingConverter buildingConverter;
+
 
     @GetMapping("/list")
     public ModelAndView getAllBuildings(@ModelAttribute BuildingSearchRequest buildingSearchRequest){

@@ -1,4 +1,4 @@
-package com.devon.building.repository.specification;
+package com.devon.building.repository.specification.building;
 
 import com.devon.building.builder.BuildingSearchBuilder;
 import com.devon.building.entity.BuildingEntity;

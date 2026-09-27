@@ -5,7 +5,6 @@ import com.devon.building.model.request.LoginRequest;
 import com.devon.building.model.request.RegisterRequest;
 import com.devon.building.model.response.LoginResponse;
 import com.devon.building.service.AuthenticationService;
-import com.devon.building.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

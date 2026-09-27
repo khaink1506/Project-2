@@ -61,6 +61,9 @@ public class User extends BaseEntity implements Serializable{
     @ManyToMany(mappedBy = "user")
     private Set<BuildingEntity> building = new HashSet<>();
 
+    @ManyToMany(mappedBy = "staffs")
+    private Set<CustomerEntity> customers = new HashSet<>();
+
     @Column(name = "facebook_account_id")
     String facebookAccountId;
 

@@ -58,11 +58,25 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/user/register").permitAll()
+
+                        // BUILDING
                         .requestMatchers(HttpMethod.GET, "/api/buildings/**").hasAnyRole(SystemConstant.USER, SystemConstant.STAFF, SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.POST, "/api/buildings").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.PUT, "/api/buildings/assign").hasRole(SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.PUT, "/api/buildings").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.DELETE, "/api/buildings/**").hasRole(SystemConstant.MANAGER)
+
+                        // CUSTOMER
+                        .requestMatchers(HttpMethod.PUT, "/api/customers/assign").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole(SystemConstant.MANAGER)
+                        .requestMatchers( "/api/customers").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
+
+                        // TRANSACTION
+                        .requestMatchers(HttpMethod.POST, "/api/transactions").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.PUT, "/api/transactions").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.DELETE, "/api/transactions/**").hasRole(SystemConstant.MANAGER)
+
+                        // USER
                         .requestMatchers("/admin/users/userImage").permitAll()
                         .requestMatchers(HttpMethod.GET,"/admin/users/list").hasRole(SystemConstant.MANAGER)
                         .requestMatchers("/admin/users/**").hasAnyRole(SystemConstant.MANAGER, SystemConstant.STAFF)

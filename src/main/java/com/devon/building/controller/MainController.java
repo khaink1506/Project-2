@@ -269,4 +269,12 @@ public class MainController {
         response.getOutputStream().close();
     }
 
+
+    @GetMapping("/contact")
+    public String contactPage() {
+        return "contact";
+    }
+
+
+
 }
