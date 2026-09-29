@@ -171,81 +171,67 @@
 
         if (!isAgreeTerms) {
             alert('Bạn phải đồng ý với điều khoản cộng đồng!');
-            return false;
+            return;
         }
-
         const fullName = document.getElementById('fullName').value.trim();
         if (fullName.length < 2) {
             alert('Tên phải có ít nhất 2 ký tự!');
-            return false;
+            return;
         }
-
         const username = document.getElementById('username').value.trim();
         if (username.length < 3) {
             alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
-            return false;
+            return;
         }
 
         if (password !== confirmPassword) {
             alert('Mật khẩu không khớp!');
-            return false;
+            return;
         }
 
         if (password.length < 6) {
             alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
-            return false;
+            return;
         }
-
         const formData = {
             fullName: fullName,
             userName: username,
             password: password,
             confirmPassword: confirmPassword
         };
-
-        // Add loading effect to register button
         const registerBtn = document.querySelector('.register-btn');
-        registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
+        registerBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+
         registerBtn.disabled = true;
 
-        // Send AJAX request
-        fetch('/api/user/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || 'Đăng ký thất bại');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert('Đăng ký thành công. Vui lòng đăng nhập.');
+        // AJAX
+        $.ajax({
+            url: '/api/user/register',
+            type: 'POST',
+            contentType: 'application/json',
+            timeout: 10000,
+            data: JSON.stringify(formData),
+            dataType: 'json',
+
+            success: function (response) {
+                alert(response.message);
                 window.location.href = '/login';
-            })
-            .catch(error => {
-                var message = "Đăng ký thất bại!";
-                try {
-                    // Nếu message là JSON, lấy ra phần message
-                    const errorJson = JSON.parse(error.message);
-                    if (errorJson.message) {
-                        message = errorJson.message;
-                    }
-                } catch (e) {
-                    // Nếu không phải JSON thì hiện mặc định
-                    message = error.message || message;
+            },
+
+            error: function (response) {
+                if (response.responseJSON?.detail) {
+                    alert(response.responseJSON.detail.join('\n'));
+                } else if (response.responseJSON?.message) {
+                    alert(response.responseJSON.message);
+                } else {
+                    alert("Đăng ký thất bại!");
                 }
-                alert(message);
-                // Reset button
                 registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
                 registerBtn.disabled = false;
-
-            });
+            }
+        });
     });
 </script>
 </body>

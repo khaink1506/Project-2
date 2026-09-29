@@ -5,6 +5,7 @@ import com.devon.building.entity.BuildingEntity;
 import com.devon.building.entity.CustomerEntity;
 import com.devon.building.enums.Status;
 import com.devon.building.model.dto.BuildingDTO;
+import com.devon.building.model.request.ContactRequest;
 import com.devon.building.model.request.CustomerRequest;
 import com.devon.building.model.request.CustomerSearchRequest;
 import com.devon.building.model.response.CustomerSearchResponse;
@@ -45,5 +46,9 @@ public class CustomerConverter {
 
     public CustomerRequest toCustomerRequest(CustomerEntity customerEntity){
         return modelMapper.map(customerEntity, CustomerRequest.class);
+    }
+
+    public CustomerEntity toCustomerContact(ContactRequest request){
+        return modelMapper.map(request, CustomerEntity.class);
     }
 }

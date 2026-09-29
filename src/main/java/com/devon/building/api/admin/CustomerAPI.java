@@ -2,6 +2,7 @@ package com.devon.building.api.admin;
 
 import com.devon.building.model.dto.AssignCustomerDTO;
 import com.devon.building.model.dto.ResponseDTO;
+import com.devon.building.model.request.ContactRequest;
 import com.devon.building.model.request.CustomerRequest;
 import com.devon.building.service.CustomerService;
 import jakarta.validation.Valid;
@@ -41,6 +42,11 @@ public class CustomerAPI {
     @DeleteMapping("/{ids}")
     public ResponseEntity<ResponseDTO> deleteCustomer(@PathVariable List<Long> ids) {
         return ResponseEntity.ok().body(customerService.deleteCustomer(ids));
+    }
+
+    @PostMapping("/contact")
+    public ResponseEntity<ResponseDTO> saveContact(@RequestBody @Valid ContactRequest request){
+        return ResponseEntity.ok().body(customerService.saveContact(request));
     }
 
 }

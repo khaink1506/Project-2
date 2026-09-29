@@ -70,6 +70,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/customers/assign").hasRole(SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole(SystemConstant.MANAGER)
                         .requestMatchers( "/api/customers").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
+                        .requestMatchers(HttpMethod.POST, "/api/customers/contact").permitAll()
 
                         // TRANSACTION
                         .requestMatchers(HttpMethod.POST, "/api/transactions").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)

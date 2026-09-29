@@ -78,26 +78,26 @@
                     <form id="contactForm" class="form-horizontal">
                         <div class="form-group">
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" placeholder="Họ và tên" name="fullName">
+                                <input type="text" id= "fullName" class="form-control" placeholder="Họ và tên" name="fullName">
                                 <!--required-->
                                 <span class="error-message" id="noFullName" style="display: none; color: red;">Vui lòng nhập đầy đủ họ tên</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" placeholder="Email" name="email">
+                                <input type="text" id= "email" class="form-control" placeholder="Email" name="email">
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" placeholder="Số điện thoại" name="customerPhone">
+                                <input type="text" id= "phone" class="form-control" placeholder="Số điện thoại" name="phone">
                                 <!--required-->
                                 <span class="error-message" id="noCustomerPhone" style="display: none; color: red;">Vui lòng nhập số điện thoại quản lí đúng định dạng 10 số</span>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-xs-6">
-                                <input type="text" class="form-control" placeholder="Nhu cầu" name="demand">
+                                <input type="text" id= "demand" class="form-control" placeholder="Nhu cầu" name="demand">
                             </div>
                         </div>
                         <div class="form-group">
@@ -112,7 +112,9 @@
             </div>
         </div>
     </div>
+    <th:block th:insert="~{_footer :: footer}"></th:block>
 </div>
+<th:block th:replace="~{admin/common/common-scripts :: jquery}"></th:block>
 <script>
     function hideErrorMessages(){
         const errorMessages = document.querySelectorAll('.error-message');
@@ -128,19 +130,49 @@
             isValid = false;
         }
         const regexPhone = /^0\d{9}$/;
-        if(data['customerPhone'] && !regexPhone.test(data['customerPhone'].trim())){
+        if(data['phone'] && !regexPhone.test(data['phone'].trim())){
             document.getElementById('noCustomerPhone').style.display = 'block';
             isValid = false;
         }
         return isValid;
     }
-    $('#contactForm').on('submit', function (e) {
+    $('#contactForm').on('submit', function(e) {
+        console.log("SUBMIT EVENT");
         e.preventDefault();
+
+        const data = {
+            fullName: $("#fullName").val(),
+            email: $("#email").val(),
+            phone: $("#phone").val(),
+            demand: $("#demand").val()
+        };
+
+        if (!validateData(data)) {
+            return;
+        }
+
+        $.ajax({
+            url: '/api/customers/contact', // API endpoint
+            type: 'POST', // request method
+            contentType: 'application/json',
+            timeout: 10000, // Thời gian chờ phản hồi từ server (10 giây)
+            data: JSON.stringify(data), // Chuyển data thành chuỗi JSON String
+            dataType: 'json', // Kiểu dữ liệu trả về từ server
+            success: function (response) {
+                alert("Thêm khách hàng thành công");
+            },
+            error: function (xhr, status, error) {
+                console.log("STATUS CODE:", xhr.status);
+                console.log("STATUS:", status);
+                console.log("ERROR:", error);
+                console.log("RESPONSE:", xhr.responseText);
+
+                alert("Lỗi " + xhr.status + ": " + xhr.responseText);
+            }
+        });
 
 
     });
 </script>
-
-<th:block th:insert="~{_footer :: footer}"></th:block>
 </body>
 </html>

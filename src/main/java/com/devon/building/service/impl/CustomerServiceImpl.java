@@ -5,11 +5,13 @@ import com.devon.building.constant.SystemConstant;
 import com.devon.building.converter.CustomerConverter;
 import com.devon.building.entity.CustomerEntity;
 import com.devon.building.entity.User;
+import com.devon.building.enums.Status;
 import com.devon.building.exception.DuplicateResourceException;
 import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.exception.ResourceNotFoundException;
 import com.devon.building.model.dto.AssignCustomerDTO;
 import com.devon.building.model.dto.ResponseDTO;
+import com.devon.building.model.request.ContactRequest;
 import com.devon.building.model.request.CustomerRequest;
 import com.devon.building.model.request.CustomerSearchRequest;
 import com.devon.building.model.response.CustomerSearchResponse;
@@ -19,6 +21,7 @@ import com.devon.building.repository.UserRepository;
 import com.devon.building.repository.specification.customer.CustomerSpecification;
 import com.devon.building.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -133,6 +136,21 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.saveAll(customers);
         ResponseDTO responseDTO = new ResponseDTO();
         responseDTO.setMessage("Xóa khách hàng thành công");
+        return responseDTO;
+    }
+
+    @Override
+    public ResponseDTO saveContact(ContactRequest request) {
+        String phone = (request.getPhone() != null) ? request.getPhone().trim() : "";
+        if(customerRepository.existsByPhoneAndIsActiveTrue(phone)){
+            throw new DuplicateResourceException("Số điện thoại đã tồn tại");
+        }
+        CustomerEntity customer = customerConverter.toCustomerContact(request);
+        customer.setStatus(Status.CHUA_XU_LY);
+        customer.setActive(true);
+        customerRepository.save(customer);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setMessage("Gửi liên hệ thành công");
         return responseDTO;
     }
 
