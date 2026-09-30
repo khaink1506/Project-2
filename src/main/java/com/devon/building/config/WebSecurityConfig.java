@@ -57,7 +57,8 @@ public class WebSecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/customers/contact").permitAll()
 
                         // BUILDING
                         .requestMatchers(HttpMethod.GET, "/api/buildings/**").hasAnyRole(SystemConstant.USER, SystemConstant.STAFF, SystemConstant.MANAGER)
@@ -70,7 +71,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/customers/assign").hasRole(SystemConstant.MANAGER)
                         .requestMatchers(HttpMethod.DELETE, "/api/customers/**").hasRole(SystemConstant.MANAGER)
                         .requestMatchers( "/api/customers").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
-                        .requestMatchers(HttpMethod.POST, "/api/customers/contact").permitAll()
 
                         // TRANSACTION
                         .requestMatchers(HttpMethod.POST, "/api/transactions").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
@@ -82,6 +82,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/admin/users/list").hasRole(SystemConstant.MANAGER)
                         .requestMatchers("/admin/users/**").hasAnyRole(SystemConstant.MANAGER, SystemConstant.STAFF)
                         .requestMatchers("/admin/**").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
+                        
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))

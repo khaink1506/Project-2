@@ -39,21 +39,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public ResponseDTO register(RegisterRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new InvalidRequestException("Password and confirm password do not match");
+            throw new InvalidRequestException("Password không đúng");
         }
         if(userRepository.existsByUserName(request.getUserName())){
-            throw new ResourceAlreadyExists("Username already exists");
+            throw new ResourceAlreadyExists("Username đã tồn tại");
         }
         Role role = roleRepository.findByCode("ROLE_USER")
-                .orElseThrow(() -> new ResourceNotFoundException("Role is required"));
+                .orElseThrow(() -> new ResourceNotFoundException("role không tồn tại"));
 
         User newUser = userConverter.toUser(request);
         newUser.setEncryptedPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setUserRole(role);
+        newUser.setCreatedBy(request.getUserName());
         newUser.setActive(true);
         User savedUser = userRepository.save(newUser);
         return ResponseDTO.builder()
-                .message("Register Successfully")
+                .message("Đăng ký tài khoản thành công")
                 .data(userConverter.toResponse(savedUser))
                 .build();
     }
@@ -67,7 +68,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String accessToken = jwtService.generateAccessToken(userDetails);
         return LoginResponse.builder()
-                .message("Login SuccessFully")
+                .message("Đăng nhập thành công")
                 .token(accessToken)
                 .build();
     }

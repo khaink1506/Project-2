@@ -2,6 +2,7 @@ package com.devon.building.model.request;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Getter
@@ -11,19 +12,23 @@ import lombok.*;
 @Builder
 public class RegisterRequest {
 
-    @NotBlank(message = "Fullname can not be blamk")
+    @NotBlank(message = "Tên không được để trống")
     private String fullName;
 
-    @NotBlank(message = "Username cannot be blank")
+    @NotBlank(message = "Tên đăng nhập không được để trống")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9@]+$",
+            message = "Tên đăng nhập không hợp lệ"
+    )
     private String userName;
 
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = "Mật khẩu không được để trống")
     private String password;
 
-    @NotBlank(message = "Confirm password cannot be blank")
+    @NotBlank(message = "Mật khẩu xác nhận không được để trống")
     private String confirmPassword;
 
-    @AssertTrue(message = "You must agree to the Service and Privacy Policy")
+    @AssertTrue(message = "Bạn phải đồng ý điều khoản dịch vụ bảo mật")
     private Boolean isAgreeTerms;
 
 

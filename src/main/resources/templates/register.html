@@ -165,45 +165,59 @@
     document.getElementById('registerForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
+        const fullName = document.getElementById('fullName').value.trim();
+        const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
         const isAgreeTerms = document.getElementById('isAgreeTerms').checked;
+
 
         if (!isAgreeTerms) {
             alert('Bạn phải đồng ý với điều khoản cộng đồng!');
             return;
         }
-        const fullName = document.getElementById('fullName').value.trim();
-        if (fullName.length < 2) {
-            alert('Tên phải có ít nhất 2 ký tự!');
+        if (!fullName || fullName.length < 3) {
+            alert('Họ tên không được để trống');
             return;
         }
-        const username = document.getElementById('username').value.trim();
-        if (username.length < 3) {
-            alert('Tên đăng nhập phải có ít nhất 3 ký tự!');
+
+        if (!username) {
+            alert('Tên đăng nhập không được để trống!');
+            return;
+        }
+        const usernameRegex = /^(?!.*@gmail\.com$)[a-zA-Z0-9@]+$/;
+        if (username.length < 3 || !usernameRegex.test(username)) {
+            alert('Tên đăng nhập phải có ít nhất 3 ký tự và kí tự không hợp lệ!');
+            return;
+        }
+
+        if (!password || password.length < 3) {
+            alert('Mật khẩu không được để trống và phải có ít nhất 3 ký tự!');
+            return;
+        }
+
+        if (!confirmPassword) {
+            alert('Mật khẩu xác nhận không được để trống!');
             return;
         }
 
         if (password !== confirmPassword) {
-            alert('Mật khẩu không khớp!');
+            alert('Mật khẩu xác nhận không khớp!');
             return;
         }
 
-        if (password.length < 6) {
-            alert('Mật khẩu phải chứa ít nhất 6 ký tự!');
-            return;
-        }
         const formData = {
-            fullName: fullName,
+            fullName,
             userName: username,
-            password: password,
-            confirmPassword: confirmPassword
+            password,
+            confirmPassword,
+            isAgreeTerms
         };
+
         const registerBtn = document.querySelector('.register-btn');
 
         registerBtn.innerHTML =
             '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
-
         registerBtn.disabled = true;
 
         // AJAX
@@ -226,9 +240,11 @@
                 } else if (response.responseJSON?.message) {
                     alert(response.responseJSON.message);
                 } else {
-                    alert("Đăng ký thất bại!");
+                    alert('Đăng ký thất bại!');
                 }
-                registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>Register';
+
+                registerBtn.innerHTML =
+                    '<i class="fas fa-user-plus me-2"></i>Register';
                 registerBtn.disabled = false;
             }
         });
