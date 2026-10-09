@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
     public ResponseDTO loadStaffs(Long customerId) {
         CustomerEntity customerEntity = customerRepository.findById(customerId)
                 .orElseThrow(() -> new InvalidRequestException("Không tìm thầy tòa nhà có ID: " + customerId));
-        List<User> staffs = userRepository.findAllByUserRole_CodeAndActiveTrue(SystemConstant.STAFF_ROLE);
+        List<User> staffs = userRepository.findAllByUserRoleAndActiveTrue(SystemConstant.STAFF_ROLE);
         Set<Long> assignmentStaffs = customerEntity.getStaffs()
                 .stream().map(User::getId).collect(Collectors.toSet());
         List<StaffResponseDTO> staffResponse = buildStaffResponses(staffs, assignmentStaffs);

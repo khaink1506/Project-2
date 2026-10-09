@@ -82,7 +82,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"/admin/users/list").hasRole(SystemConstant.MANAGER)
                         .requestMatchers("/admin/users/**").hasAnyRole(SystemConstant.MANAGER, SystemConstant.STAFF)
                         .requestMatchers("/admin/**").hasAnyRole(SystemConstant.STAFF, SystemConstant.MANAGER)
-                        
                         .anyRequest().permitAll()
                 )
                 .exceptionHandling(ex -> ex.accessDeniedPage("/403"))

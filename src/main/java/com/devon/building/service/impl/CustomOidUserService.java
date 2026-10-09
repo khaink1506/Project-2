@@ -1,9 +1,8 @@
 package com.devon.building.service.impl;
 
 import com.devon.building.constant.SystemConstant;
-import com.devon.building.entity.Role;
 import com.devon.building.entity.User;
-import com.devon.building.repository.RoleRepository;
+import com.devon.building.enums.UserRole;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.utils.OAuth2PictureFetcher;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ import java.util.UUID;
 public class CustomOidUserService extends OidcUserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final OAuth2PictureFetcher oAuth2PictureFetcher;
 
@@ -46,19 +44,17 @@ public class CustomOidUserService extends OidcUserService {
                     return createGoogleUser(oidcUser);
                 });
 
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getUserRole().getCode());
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(user.getUserRole());
         return new DefaultOidcUser(Collections.singleton(grantedAuthority),
                 oidcUser.getIdToken(),
                 oidcUser.getUserInfo(),
                 "email");
     }
     private User createGoogleUser(OidcUser oidcUser){
-        Role role = roleRepository.findByCode(SystemConstant.USER_ROLE)
-                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
         return userRepository.save(User.builder()
                         .userName(oidcUser.getEmail())
                         .active(oidcUser.getEmailVerified())
-                        .userRole(role)
+                        .userRole(SystemConstant.USER_ROLE)
                         .fullName(oidcUser.getFullName())
                         .googleAccountId(oidcUser.getAttributes().get("sub").toString())
                         .encryptedPassword(passwordEncoder.encode(UUID.randomUUID().toString()))

@@ -1,16 +1,14 @@
 package com.devon.building.service.impl;
 
 import com.devon.building.converter.UserConverter;
-import com.devon.building.entity.Role;
 import com.devon.building.entity.User;
+import com.devon.building.enums.UserRole;
 import com.devon.building.exception.InvalidRequestException;
 import com.devon.building.exception.ResourceAlreadyExists;
-import com.devon.building.exception.ResourceNotFoundException;
 import com.devon.building.model.dto.ResponseDTO;
 import com.devon.building.model.request.LoginRequest;
 import com.devon.building.model.request.RegisterRequest;
 import com.devon.building.model.response.LoginResponse;
-import com.devon.building.repository.RoleRepository;
 import com.devon.building.repository.UserRepository;
 import com.devon.building.service.AuthenticationService;
 import com.devon.building.service.JwtService;
@@ -18,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -29,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final UserConverter userConverter;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -44,12 +40,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(userRepository.existsByUserName(request.getUserName())){
             throw new ResourceAlreadyExists("Username đã tồn tại");
         }
-        Role role = roleRepository.findByCode("ROLE_USER")
-                .orElseThrow(() -> new ResourceNotFoundException("role không tồn tại"));
-
         User newUser = userConverter.toUser(request);
         newUser.setEncryptedPassword(passwordEncoder.encode(request.getPassword()));
-        newUser.setUserRole(role);
+        newUser.setUserRole(UserRole.ROLE_USER.name());
         newUser.setCreatedBy(request.getUserName());
         newUser.setActive(true);
         User savedUser = userRepository.save(newUser);

@@ -1,6 +1,7 @@
 package com.devon.building.repository;
 
 import com.devon.building.entity.User;
+import com.devon.building.enums.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,9 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUserNameAndActiveTrue(String username);
 
-//    List<User> findAllByUserRoleAndActiveTrue(String userRole);
+    List<User> findAllByUserRoleAndActiveTrue(String userRole);
 
     boolean existsByUserName(String username);
 
-    List<User> findAllByUserRole_CodeAndActiveTrue(String roleCode);
 }
